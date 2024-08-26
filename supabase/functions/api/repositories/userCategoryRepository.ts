@@ -18,9 +18,9 @@ export class UserCategoryRepository {
 
   async deleteUserCategoryByUserId(userId: string) {
     const { error: deleteError } = await supabase
-      .from('usercategory')
+      .from('user_category')
       .delete()
-      .eq('userId', userId);
+      .eq('user_id', userId);
 
     if (deleteError) {
       throw new DatabaseAccessError('유저 관심 카테고리 삭제 실패', deleteError.message);

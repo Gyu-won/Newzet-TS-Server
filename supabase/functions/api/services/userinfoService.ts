@@ -1,7 +1,8 @@
 import { InvalidArgumentsError } from '../lib/exceptions/invalidArgumentsError.ts';
 import { CategoryResDto } from '../models/dtos/category/categoryResDto.ts';
-import { UserinfoReqDto } from '../models/dtos/userinfo/UserinfoReqDto.ts';
-import { UserinfoResDto } from '../models/dtos/userinfo/UserinfoResDto.ts';
+import { UserinfoInitResDto } from '../models/dtos/userinfo/userinfoInitResDto.ts';
+import { UserinfoReqDto } from '../models/dtos/userinfo/userinfoReqDto.ts';
+import { UserinfoResDto } from '../models/dtos/userinfo/userinfoResDto.ts';
 import { UserCategoryRepository } from '../repositories/userCategoryRepository.ts';
 import { UserinfoRepository } from '../repositories/userinfoRepository.ts';
 
@@ -39,5 +40,11 @@ export class UserinfoService {
     await this.userinfoRepository.updateNickname(userId, userinfo.nickname);
     await this.userCategoryRepository.deleteUserCategoryByUserId(userId);
     await this.userCategoryRepository.addUserCategory(userId, userinfo.userCategory);
+  }
+
+  async getIsInitialized(userId: string) {
+    const myInfo = await this.userinfoRepository.getUserinfo(userId);
+
+    return new UserinfoInitResDto(myInfo.email != null);
   }
 }
