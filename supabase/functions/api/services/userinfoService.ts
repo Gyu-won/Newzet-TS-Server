@@ -1,4 +1,6 @@
+import { InvalidArgumentsError } from '../lib/exceptions/invalidArgumentsError.ts';
 import { CategoryResDto } from '../models/dtos/category/categoryResDto.ts';
+import { UserinfoReqDto } from '../models/dtos/userinfo/UserinfoReqDto.ts';
 import { UserinfoResDto } from '../models/dtos/userinfo/UserinfoResDto.ts';
 import { UserCategoryRepository } from '../repositories/userCategoryRepository.ts';
 import { UserinfoRepository } from '../repositories/userinfoRepository.ts';
@@ -22,5 +24,20 @@ export class UserinfoService {
       categoryList.map((category) => new CategoryResDto(category)),
     );
     return userinfoResDto;
+  }
+
+  async updateUserinfo(userId: string, userinfo: UserinfoReqDto) {
+    if (userinfo.email != null) {
+      const user = await this.userinfoRepository.getUserinfo(userId);
+      if (user.email != null) {
+        throw new InvalidArgumentsError('이미 이메일이 등록된 유저입니다.');
+      }
+
+      await this.userinfoRepository.updateEmail(userId, userinfo.email);
+    }
+
+    await this.userinfoRepository.updateNickname(userId, userinfo.nickname);
+    await this.userCategoryRepository.deleteUserCategoryByUserId(userId);
+    await this.userCategoryRepository.addUserCategory(userId, userinfo.userCategory);
   }
 }
