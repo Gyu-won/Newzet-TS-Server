@@ -1,4 +1,4 @@
-import { Category } from '../entities/category.ts';
+import { Category } from '../../entities/category.ts';
 
 export class CategoryResDto {
   id: string;

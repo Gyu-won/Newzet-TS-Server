@@ -2,7 +2,7 @@ import { Context } from 'https://deno.land/x/hono@v4.3.11/mod.ts';
 
 import { createResponse } from '../lib/response/responseFormat.ts';
 import { ResponseCode } from '../lib/response/responseCode.ts';
-import { CategoryListResDto } from '../models/category/categoryListResDto.ts';
+import { CategoryListResDto } from '../models/dtos/category/categoryListResDto.ts';
 import { CategoryService } from '../services/categoryService.ts';
 
 export class CategoryController {

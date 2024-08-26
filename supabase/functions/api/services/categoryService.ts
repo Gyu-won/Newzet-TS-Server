@@ -1,5 +1,5 @@
-import { CategoryListResDto } from '../models/category/categoryListResDto.ts';
-import { CategoryResDto } from '../models/category/categoryResDto.ts';
+import { CategoryListResDto } from '../models/dtos/category/categoryListResDto.ts';
+import { CategoryResDto } from '../models/dtos/category/categoryResDto.ts';
 import { Category } from '../models/entities/category.ts';
 import { CategoryRepository } from '../repositories/categoryRepository.ts';
 
