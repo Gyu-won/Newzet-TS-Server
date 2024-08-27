@@ -1,12 +1,12 @@
 import { ApiFactory } from 'https://deno.land/x/aws_api@v0.8.1/client/mod.ts';
 import { S3 } from 'https://deno.land/x/aws_api@v0.8.1/services/s3/mod.ts';
-import { awsAccessKey, awsRegion, awsSecretKey } from '../environments.ts';
+import { awsAccessKey, awsMailBucket, awsRegion, awsSecretKey } from '../environments.ts';
 
 const factory = new ApiFactory({
   region: awsRegion,
   credentials: {
-    awsAccessKeyId: awsAccessKey || '',
-    awsSecretKey: awsSecretKey || '',
+    awsAccessKeyId: awsAccessKey,
+    awsSecretKey: awsSecretKey,
   },
 });
 
@@ -14,13 +14,9 @@ const s3 = factory.makeNew(S3);
 
 Deno.serve(async (req: Request): Promise<Response> => {
   try {
-    const { bucketName, objectKey } = await req.json();
-    const responseBody = await getObjectFromS3(bucketName, objectKey);
-    const { fromName, fromEmail, to } = await parseEmailContent(responseBody);
-
-    console.log('From Name:', fromName);
-    console.log('From Email:', fromEmail);
-    console.log('To:', to);
+    const { objectKey } = await req.json();
+    const responseBody = await getObjectFromS3(awsMailBucket, objectKey);
+    const { fromName, fromEmail, to, subject } = await parseEmailContent(responseBody);
 
     return new Response(JSON.stringify({ status: 'success' }), { status: 200 });
   } catch (error) {
@@ -59,20 +55,24 @@ async function parseEmailContent(responseBody: ReadableStream<Uint8Array>) {
 
   let from = '';
   let to = '';
+  let subject = '';
 
   headerLines.forEach((line) => {
     if (line.startsWith('From:')) {
       from = line.replace('From:', '').trim();
     } else if (line.startsWith('To:')) {
       to = line.replace('To:', '').trim();
+    } else if (line.startsWith('Subject:')) {
+      subject = line.replace('Subject:', '').trim();
     }
   });
 
   let [fromName, fromEmail] = from.split(/(?=\s<)/);
   fromName = decodeBase64(fromName);
   fromEmail = fromEmail ? fromEmail.replace(/[<>]/g, '').trim() : '';
+  subject = decodeBase64(subject);
 
-  return { fromName, fromEmail, to };
+  return { fromName, fromEmail, to, subject };
 }
 
 function decodeBase64(encodedText: string) {
