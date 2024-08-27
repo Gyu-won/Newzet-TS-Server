@@ -33,4 +33,5 @@ export class ArticleRepository {
     if (insertError) {
       throw new DatabaseAccessError('article 추가 실패', insertError.message);
     }
+  }
 }

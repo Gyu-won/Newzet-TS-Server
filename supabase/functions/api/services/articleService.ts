@@ -3,6 +3,7 @@ import { UserinfoRepository } from '../repositories/userinfoRepository.ts';
 import { ArticleListResDto } from '../models/dtos/article/articleListResDto.ts';
 import { ArticleResDto } from '../models/dtos/article/articleResDto.ts';
 import { ArticleWithImageDao } from '../models/daos/articleWithImageDao.ts';
+import { InvalidArgumentsError } from '../lib/exceptions/invalidArgumentsError.ts';
 
 export class ArticleService {
   private articleRepository: ArticleRepository;
@@ -29,7 +30,10 @@ export class ArticleService {
     title: string,
     objectKey: string,
   ) {
-    const toUserId = this.userinfoRepository.getUserinfoByEmail(to.split('@')[0]) || '';
-    await this.articleRepository.addArticle(toUserId, fromName, fromDomain, title, objectKey);
+    const userinfo = await this.userinfoRepository.getUserinfoByEmail(to.split('@')[0]);
+    if (userinfo == null) {
+      throw new InvalidArgumentsError('존재하지 않는 사용자의 메일에 메일이 도착했습니다');
+    }
+    await this.articleRepository.addArticle(userinfo.id, fromName, fromDomain, title, objectKey);
   }
 }
