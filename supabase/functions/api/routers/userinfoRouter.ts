@@ -10,6 +10,7 @@ userinfoRouter.use(authMiddleware);
 
 userinfoRouter.get('', (c) => userinfoController.getUserinfoV1(c));
 userinfoRouter.patch('', (c) => userinfoController.updateUserinfoV1(c));
+userinfoRouter.delete('', (c) => userinfoController.deleteUserV1(c));
 userinfoRouter.get('/init', (c) => userinfoController.getIsInitializedV1(c));
 
 export default userinfoRouter;

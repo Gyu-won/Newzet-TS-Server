@@ -1,4 +1,5 @@
 import { InvalidArgumentsError } from '../lib/exceptions/invalidArgumentsError.ts';
+import { supabase } from '../lib/supabase.ts';
 import { CategoryResDto } from '../models/dtos/category/categoryResDto.ts';
 import { UserinfoInitResDto } from '../models/dtos/userinfo/userinfoInitResDto.ts';
 import { UserinfoReqDto } from '../models/dtos/userinfo/userinfoReqDto.ts';
@@ -42,9 +43,22 @@ export class UserinfoService {
     await this.userCategoryRepository.addUserCategory(userId, userinfo.userCategory);
   }
 
+  async deleteUser(userId: string) {
+    await this.userinfoRepository.updateDeletedAt(userId);
+
+    await this.deleteAuth(userId);
+  }
+
   async getIsInitialized(userId: string) {
     const myInfo = await this.userinfoRepository.getUserinfo(userId);
 
     return new UserinfoInitResDto(myInfo.email != null);
+  }
+
+  private async deleteAuth(userId: string) {
+    const { error } = await supabase.auth.admin.deleteUser(userId);
+    if (error) {
+      throw new Error(`auth user delete 실패: ${error.message}`);
+    }
   }
 }

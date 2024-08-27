@@ -37,4 +37,15 @@ export class UserinfoRepository {
       throw new DatabaseAccessError('유저 닉네임 변경 실패', error.message);
     }
   }
+
+  async updateDeletedAt(userId: string) {
+    const { error } = await supabase
+      .from('userinfo')
+      .update({ deleted_at: new Date() })
+      .eq('id', userId);
+
+    if (error) {
+      throw new DatabaseAccessError('유저 삭제 실패', error.message);
+    }
+  }
 }
