@@ -11,7 +11,7 @@ export class ArticleResDto {
   constructor(article: ArticleWithImageDao) {
     this.id = article.id;
     this.newsletterName = article.from_name;
-    this.newsletterImgUrl = article.image_url;
+    this.newsletterImgUrl = article.image_url || '';
     this.title = article.title;
     this.isRead = article.is_read;
     this.createdAt = article.created_at;
