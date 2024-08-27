@@ -1,7 +1,7 @@
 export interface Article {
   id: string;
   to_user_id: string;
-  from_name: string | null;
+  from_name: string;
   from_domain: string;
   title: string;
   content_url: string;
