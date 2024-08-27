@@ -1,7 +1,9 @@
 import { ApiFactory } from 'https://deno.land/x/aws_api@v0.8.1/client/mod.ts';
 import { S3 } from 'https://deno.land/x/aws_api@v0.8.1/services/s3/mod.ts';
 import { awsAccessKey, awsMailBucket, awsRegion, awsSecretKey } from '../environments.ts';
+import { ArticleService } from '../api/services/articleService.ts';
 
+const articleService = new ArticleService();
 const factory = new ApiFactory({
   region: awsRegion,
   credentials: {
@@ -16,8 +18,9 @@ Deno.serve(async (req: Request): Promise<Response> => {
   try {
     const { objectKey } = await req.json();
     const responseBody = await getObjectFromS3(awsMailBucket, objectKey);
-    const { fromName, fromEmail, to, subject } = await parseEmailContent(responseBody);
+    const { to, fromName, fromDomain, title } = await parseEmailContent(responseBody);
 
+    await articleService.addArticle(to, fromName, fromDomain, title, objectKey);
     return new Response(JSON.stringify({ status: 'success' }), { status: 200 });
   } catch (error) {
     console.error(error.message);
@@ -55,7 +58,7 @@ async function parseEmailContent(responseBody: ReadableStream<Uint8Array>) {
 
   let from = '';
   let to = '';
-  let subject = '';
+  let title = '';
 
   headerLines.forEach((line) => {
     if (line.startsWith('From:')) {
@@ -63,16 +66,16 @@ async function parseEmailContent(responseBody: ReadableStream<Uint8Array>) {
     } else if (line.startsWith('To:')) {
       to = line.replace('To:', '').trim();
     } else if (line.startsWith('Subject:')) {
-      subject = line.replace('Subject:', '').trim();
+      title = line.replace('Subject:', '').trim();
     }
   });
 
-  let [fromName, fromEmail] = from.split(/(?=\s<)/);
+  let [fromName, fromDomain] = from.split(/(?=\s<)/);
   fromName = decodeBase64(fromName);
-  fromEmail = fromEmail ? fromEmail.replace(/[<>]/g, '').trim() : '';
-  subject = decodeBase64(subject);
+  fromDomain = fromDomain ? fromDomain.replace(/[<>]/g, '').trim() : '';
+  title = decodeBase64(title);
 
-  return { fromName, fromEmail, to, subject };
+  return { to, fromName, fromDomain, title };
 }
 
 function decodeBase64(encodedText: string) {
