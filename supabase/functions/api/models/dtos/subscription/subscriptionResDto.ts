@@ -8,6 +8,6 @@ export class SubscriptionResDto {
   constructor(subscription: SubscriptionWithImageDo) {
     this.newsletterName = subscription.newsletter_name;
     this.newsletterDomain = subscription.newsletter_domain;
-    this.newsletterImageUrl = subscription.image_url;
+    this.newsletterImageUrl = subscription.image_url || '';
   }
 }
