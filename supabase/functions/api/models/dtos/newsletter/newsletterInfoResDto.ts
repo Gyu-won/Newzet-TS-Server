@@ -14,7 +14,7 @@ export class NewsletterInfoResDto {
   constructor(newsletter: Newsletter, isSubscribing: boolean, categoryName: string) {
     this.id = newsletter.id;
     this.name = newsletter.name;
-    this.imageUrl = newsletter.image_url ?? '';
+    this.imageUrl = newsletter.image_url;
     this.detail = newsletter.detail ?? '상세 정보가 없습니다.';
     this.status = newsletter.status ?? '비정기적으로 발행';
     this.dayOfWeek = newsletter.day_of_week ?? '';

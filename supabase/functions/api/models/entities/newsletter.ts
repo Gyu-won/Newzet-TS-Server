@@ -5,7 +5,7 @@ export interface Newsletter {
   description: string;
   domain: string;
   subscription_url: string;
-  image_url: string | null;
+  image_url: string;
   detail: string | null;
   priority: number | null;
   status: string | null;

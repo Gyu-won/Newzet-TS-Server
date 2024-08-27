@@ -1,5 +1,6 @@
 import { DatabaseAccessError } from '../lib/exceptions/databaseAccessError.ts';
 import { supabase } from '../lib/supabase.ts';
+import { SubscriptionWithImageDo } from '../models/dos/subscriptionWithImageDo.ts';
 
 export class SubscriptionRepository {
   async getIsSubscribing(userId: string, newsletterDomain: string): Promise<boolean> {
@@ -14,5 +15,17 @@ export class SubscriptionRepository {
     }
 
     return category.length > 0;
+  }
+
+  async getSubscriptionListWithImage(userId: string): Promise<SubscriptionWithImageDo[]> {
+    const { data: subscriptionList, error } = await supabase.rpc('get_subscription_with_image', {
+      uid: userId,
+    });
+
+    if (error) {
+      throw new DatabaseAccessError(`구독 목록 조회 실패: ${error.message}`);
+    }
+
+    return subscriptionList;
   }
 }
