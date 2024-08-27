@@ -3,22 +3,28 @@ import { NewsletterListResDto } from '../models/dtos/newsletter/newsletterListRe
 import { NewsletterResDto } from '../models/dtos/newsletter/newsletterResDto.ts';
 import { CategoryRepository } from '../repositories/categoryRepository.ts';
 import { NewsletterRepository } from '../repositories/newsletterRepository.ts';
+import { SubscriptionRepository } from '../repositories/subscriptionRepository.ts';
 
 export class NewsletterService {
   private newsletterRepository: NewsletterRepository;
   private categoryRepository: CategoryRepository;
+  private subscriptionRepository: SubscriptionRepository;
 
   constructor() {
     this.newsletterRepository = new NewsletterRepository();
     this.categoryRepository = new CategoryRepository();
+    this.subscriptionRepository = new SubscriptionRepository();
   }
 
   async getNewsletterInfo(newsletterId: string, userId: string): Promise<NewsletterInfoResDto> {
     const newsletter = await this.newsletterRepository.getNewsletterById(newsletterId);
     const category = await this.categoryRepository.getCategoryById(newsletter.category_id);
+    const isSubscribing = await this.subscriptionRepository.getIsSubscribing(
+      userId,
+      newsletter.domain,
+    );
 
-    // [TODO] 구독 여부 확인 로직 추가
-    return new NewsletterInfoResDto(newsletter, false, category.name);
+    return new NewsletterInfoResDto(newsletter, isSubscribing, category.name);
   }
 
   async searchNewsletterListByNameOrCategoryId(
