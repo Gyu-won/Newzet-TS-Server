@@ -1,9 +1,9 @@
 import { Context } from 'https://deno.land/x/hono@v4.3.11/context.ts';
 import { createResponse } from '../lib/response/responseFormat.ts';
 import { ResponseCode } from '../lib/response/responseCode.ts';
-import { DatabaseAccessError } from '../lib/exceptions/databaseAccessError.ts';
 import { NewsletterService } from '../services/newsletterService.ts';
 import { InvalidArgumentsError } from '../lib/exceptions/invalidArgumentsError.ts';
+import { createErrorResponse } from '../lib/exceptions/errorHandler.ts';
 
 export class NewsletterController {
   private newsletterService: NewsletterService;
@@ -25,13 +25,8 @@ export class NewsletterController {
 
       return c.json(createResponse(ResponseCode.SUCCESS, '뉴스레터 조회 성공', newsletter));
     } catch (error) {
-      if (error instanceof InvalidArgumentsError) {
-        return c.json(createResponse(ResponseCode.INVALID_ARGUMENTS, error.message, null));
-      }
-      if (error instanceof DatabaseAccessError) {
-        return c.json(createResponse(ResponseCode.DATABASE_ACCESS_ERROR, error.message, null));
-      }
-      return c.json(createResponse(ResponseCode.SERVER_ERROR, error.message, null));
+      const errorResponse = createErrorResponse(error);
+      return c.json(errorResponse);
     }
   }
 
@@ -47,10 +42,8 @@ export class NewsletterController {
 
       return c.json(createResponse(ResponseCode.SUCCESS, '뉴스레터 검색 성공', newsletterList));
     } catch (error) {
-      if (error instanceof DatabaseAccessError) {
-        return c.json(createResponse(ResponseCode.DATABASE_ACCESS_ERROR, error.message, null));
-      }
-      return c.json(createResponse(ResponseCode.SERVER_ERROR, error.message, null));
+      const errorResponse = createErrorResponse(error);
+      return c.json(errorResponse);
     }
   }
 }
