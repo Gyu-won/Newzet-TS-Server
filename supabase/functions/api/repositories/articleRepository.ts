@@ -1,9 +1,9 @@
 import { DatabaseAccessError } from '../lib/exceptions/databaseAccessError.ts';
 import { supabase } from '../lib/supabase.ts';
-import { ArticleWithImageDo } from '../models/dos/articleWithImageDo.ts';
+import { ArticleWithImageDao } from '../models/daos/articleWithImageDao.ts';
 
 export class ArticleRepository {
-  async getArticleList(userId: string): Promise<ArticleWithImageDo[]> {
+  async getArticleList(userId: string): Promise<ArticleWithImageDao[]> {
     const { data: articleList, error } = await supabase.rpc('get_article_with_image', {
       uid: userId,
     });

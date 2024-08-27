@@ -1,6 +1,6 @@
 import { DatabaseAccessError } from '../lib/exceptions/databaseAccessError.ts';
 import { supabase } from '../lib/supabase.ts';
-import { SubscriptionWithImageDo } from '../models/dos/subscriptionWithImageDo.ts';
+import { SubscriptionWithImageDao } from '../models/daos/subscriptionWithImageDao.ts';
 
 export class SubscriptionRepository {
   async getIsSubscribing(userId: string, newsletterDomain: string): Promise<boolean> {
@@ -17,7 +17,7 @@ export class SubscriptionRepository {
     return category.length > 0;
   }
 
-  async getSubscriptionListWithImage(userId: string): Promise<SubscriptionWithImageDo[]> {
+  async getSubscriptionListWithImage(userId: string): Promise<SubscriptionWithImageDao[]> {
     const { data: subscriptionList, error } = await supabase.rpc('get_subscription_with_image', {
       uid: userId,
     });

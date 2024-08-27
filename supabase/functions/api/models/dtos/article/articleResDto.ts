@@ -1,4 +1,4 @@
-import { ArticleWithImageDo } from '../../dos/articleWithImageDo.ts';
+import { ArticleWithImageDao } from '../../daos/articleWithImageDao.ts';
 
 export class ArticleResDto {
   id: string;
@@ -8,7 +8,7 @@ export class ArticleResDto {
   isRead: boolean;
   createdAt: string;
 
-  constructor(article: ArticleWithImageDo) {
+  constructor(article: ArticleWithImageDao) {
     this.id = article.id;
     this.newsletterName = article.from_name;
     this.newsletterImgUrl = article.image_url;

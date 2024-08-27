@@ -1,4 +1,4 @@
-export interface ArticleWithImageDo {
+export interface ArticleWithImageDao {
   id: string;
   from_name: string;
   image_url: string;
