@@ -3,7 +3,7 @@ import { Newsletter } from '../../entities/newsletter.ts';
 export class NewsletterResDto {
   id: string;
   name: string;
-  imageUrl: string | null;
+  imageUrl: string;
   description: string;
   priority: number;
 

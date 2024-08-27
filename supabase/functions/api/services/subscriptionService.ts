@@ -10,9 +10,10 @@ export class SubscriptionService {
   }
 
   async getSubscriptionList(userId: string): Promise<SubscriptionListResDto> {
-    const subscriptionList = await this.subscriptionRepository.getSubscriptionList(userId);
+    const subscriptionList = await this.subscriptionRepository.getSubscriptionListWithImage(userId);
+
     return new SubscriptionListResDto(
-      subscriptionList.map((subscription) => new SubscriptionResDto(subscription, 'image')),
+      subscriptionList.map((subscription) => new SubscriptionResDto(subscription)),
     );
   }
 }
