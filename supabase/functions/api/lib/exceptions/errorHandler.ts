@@ -19,5 +19,10 @@ export function createErrorResponse(error: Error) {
       break;
   }
 
+  logError(error);
   return createResponse(responseCode, error.message, null);
+}
+
+export function logError(error: Error) {
+  console.error(`[${error.name}] ${error.message}`);
 }
