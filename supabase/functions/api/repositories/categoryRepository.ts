@@ -7,21 +7,8 @@ export class CategoryRepository {
     const { data: categoryList, error } = await supabase.from('category').select('*').order('id');
 
     if (error) {
-      throw error;
+      throw new DatabaseAccessError('카테고리 목록 조회 실패', error.message);
     }
     return categoryList as Category[];
-  }
-
-  async getCategoryById(id: string): Promise<Category> {
-    const { data: category, error } = await supabase
-      .from('category')
-      .select('*')
-      .eq('id', id)
-      .single();
-
-    if (error) {
-      throw new DatabaseAccessError(`error get category by Id: ${error.message}`);
-    }
-    return category;
   }
 }
