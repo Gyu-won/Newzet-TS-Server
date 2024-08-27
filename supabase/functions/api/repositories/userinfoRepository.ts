@@ -38,20 +38,17 @@ export class UserinfoRepository {
     }
   }
 
-  async getUserinfoByEmail(email: string): Promise<Userinfo> {
+  async getUserinfoByEmail(email: string): Promise<Userinfo | null> {
     const { data: userinfo, error } = await supabase
       .from('userinfo')
       .select('*')
       .eq('email', `${email}@newzet.me`)
-      .single();
+      .maybeSingle();
 
     if (error) {
       throw new DatabaseAccessError('유저 정보 조회 실패', error.message);
     }
 
-    if (!userinfo) {
-      throw new InvalidArgumentsError('존재하지 않는 유저');
-    }
     return userinfo;
   }
 }
