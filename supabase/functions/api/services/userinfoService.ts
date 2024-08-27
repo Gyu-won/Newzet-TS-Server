@@ -61,8 +61,9 @@ export class UserinfoService {
       if (!(error instanceof InvalidArgumentsError)) {
         // 존재하지 않는 유저
         return new UniqueMailResDto(true, '사용 가능한 이메일입니다.');
+      } else {
+        throw error;
       }
-      throw error;
     }
   }
 }
