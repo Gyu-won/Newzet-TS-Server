@@ -11,5 +11,6 @@ userinfoRouter.use(authMiddleware);
 userinfoRouter.get('', (c) => userinfoController.getUserinfoV1(c));
 userinfoRouter.patch('', (c) => userinfoController.updateUserinfoV1(c));
 userinfoRouter.get('/init', (c) => userinfoController.getIsInitializedV1(c));
+userinfoRouter.get('/mail', (c) => userinfoController.getIsUniqueMailV1(c));
 
 export default userinfoRouter;
