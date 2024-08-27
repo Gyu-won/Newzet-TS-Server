@@ -58,7 +58,7 @@ export class UserinfoController {
 
   async getIsUniqueMailV1(c: Context) {
     try {
-      const email = c.req.param('email') ?? '';
+      const email = c.req.query('v') ?? '';
       if (!email) {
         throw new InvalidArgumentsError(`조회할 메일 주소가 없습니다.`);
       }

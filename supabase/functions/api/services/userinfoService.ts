@@ -50,6 +50,19 @@ export class UserinfoService {
   }
 
   async getIsUniqueMail(email: string): Promise<UniqueMailResDto> {
-    return new UniqueMailResDto(true, '사용 가능한 이메일입니다.');
+    try {
+      const userinfo = await this.userinfoRepository.getUserinfoByEmail(email);
+      if (userinfo.deleted_at) {
+        return new UniqueMailResDto(false, '사용 전적이 있는 이메일입니다.');
+      } else {
+        return new UniqueMailResDto(false, '이미 사용 중인 이메일입니다.');
+      }
+    } catch (error) {
+      if (!(error instanceof InvalidArgumentsError)) {
+        // 존재하지 않는 유저
+        return new UniqueMailResDto(true, '사용 가능한 이메일입니다.');
+      }
+      throw error;
+    }
   }
 }
