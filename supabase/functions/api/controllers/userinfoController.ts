@@ -43,15 +43,14 @@ export class UserinfoController {
   async getIsInitializedV1(c: Context) {
     try {
       const userId = c.get('user').id;
-      const myInfo = await this.userinfoService.getUserinfo(userId);
+      const isInitialized = await this.userinfoService.getIsInitialized(userId);
 
-      if (myInfo.email != null) {
-        return c.json(createResponse(ResponseCode.SUCCESS, '유저 정보 조회 성공', myInfo));
-      }
-      return c.json(createResponse(ResponseCode.SUCCESS, '유저 정보 조회 성공', myInfo));
+      return c.json(
+        createResponse(ResponseCode.SUCCESS, '유저 초기화 정보 조회 성공', isInitialized),
+      );
     } catch (error) {
       return c.json(
-        createResponse(ResponseCode.SERVER_ERROR, '유저 정보 조회 실패', error.message),
+        createResponse(ResponseCode.SERVER_ERROR, '유저 초기화 정보 조회 실패', error.message),
       );
     }
   }
