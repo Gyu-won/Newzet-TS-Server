@@ -3,7 +3,7 @@ import { Context } from 'https://deno.land/x/hono@v4.3.11/mod.ts';
 import { createResponse } from '../lib/response/responseFormat.ts';
 import { ResponseCode } from '../lib/response/responseCode.ts';
 import { SubscriptionService } from '../services/subscriptionService.ts';
-import { createErrorResponse } from '../lib/exceptions/errorHandler.ts';
+import { createErrorResponse, logError } from '../lib/exceptions/errorHandler.ts';
 
 export class SubscriptionController {
   private subscriptionService: SubscriptionService;
@@ -20,6 +20,7 @@ export class SubscriptionController {
       return c.json(createResponse(ResponseCode.SUCCESS, '구독 목록 조회 성공', subscriptionList));
     } catch (error) {
       const errorResponse = createErrorResponse(error);
+      logError(c, error);
       return c.json(errorResponse);
     }
   }

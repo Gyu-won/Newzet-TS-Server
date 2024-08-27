@@ -4,7 +4,7 @@ import { createResponse } from '../lib/response/responseFormat.ts';
 import { ResponseCode } from '../lib/response/responseCode.ts';
 import { ArticleService } from '../services/articleService.ts';
 import { ArticleListResDto } from '../models/dtos/article/articleListResDto.ts';
-import { createErrorResponse } from '../lib/exceptions/errorHandler.ts';
+import { createErrorResponse, logError } from '../lib/exceptions/errorHandler.ts';
 
 export class ArticleController {
   private articleService: ArticleService;
@@ -20,6 +20,7 @@ export class ArticleController {
       return c.json(createResponse(ResponseCode.SUCCESS, '아티클 목록 조회 성공', articleList));
     } catch (error) {
       const errorResponse = createErrorResponse(error);
+      logError(c, error);
       return c.json(errorResponse);
     }
   }

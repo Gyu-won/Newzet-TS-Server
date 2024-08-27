@@ -1,3 +1,4 @@
+import { Context } from 'https://deno.land/x/hono@v4.3.11/context.ts';
 import { ResponseCode } from '../response/responseCode.ts';
 import { createResponse } from '../response/responseFormat.ts';
 
@@ -19,10 +20,9 @@ export function createErrorResponse(error: Error) {
       break;
   }
 
-  logError(error);
   return createResponse(responseCode, error.message, null);
 }
 
-export function logError(error: Error) {
-  console.error(`[${error.name}] ${error.message}`);
+export function logError(c: Context, error: Error) {
+  console.error(`[${c.req.raw.method} ${c.req.path}] ${error.message}`);
 }

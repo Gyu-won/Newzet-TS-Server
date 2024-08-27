@@ -3,7 +3,7 @@ import { createResponse } from '../lib/response/responseFormat.ts';
 import { ResponseCode } from '../lib/response/responseCode.ts';
 import { NewsletterService } from '../services/newsletterService.ts';
 import { InvalidArgumentsError } from '../lib/exceptions/invalidArgumentsError.ts';
-import { createErrorResponse } from '../lib/exceptions/errorHandler.ts';
+import { createErrorResponse, logError } from '../lib/exceptions/errorHandler.ts';
 
 export class NewsletterController {
   private newsletterService: NewsletterService;
@@ -26,6 +26,7 @@ export class NewsletterController {
       return c.json(createResponse(ResponseCode.SUCCESS, '뉴스레터 조회 성공', newsletter));
     } catch (error) {
       const errorResponse = createErrorResponse(error);
+      logError(c, error);
       return c.json(errorResponse);
     }
   }
@@ -43,6 +44,7 @@ export class NewsletterController {
       return c.json(createResponse(ResponseCode.SUCCESS, '뉴스레터 검색 성공', newsletterList));
     } catch (error) {
       const errorResponse = createErrorResponse(error);
+      logError(c, error);
       return c.json(errorResponse);
     }
   }

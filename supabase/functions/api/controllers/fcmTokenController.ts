@@ -2,7 +2,7 @@ import { Context } from 'https://deno.land/x/hono@v4.3.11/context.ts';
 import { createResponse } from '../lib/response/responseFormat.ts';
 import { ResponseCode } from '../lib/response/responseCode.ts';
 import { FcmTokenService } from '../services/fcmTokenService.ts';
-import { createErrorResponse } from '../lib/exceptions/errorHandler.ts';
+import { createErrorResponse, logError } from '../lib/exceptions/errorHandler.ts';
 import { InvalidArgumentsError } from '../lib/exceptions/invalidArgumentsError.ts';
 
 export class FcmTokenController {
@@ -25,6 +25,7 @@ export class FcmTokenController {
       return c.json(createResponse(ResponseCode.SUCCESS, 'FCM 토큰 생성 성공', null));
     } catch (error) {
       const errorResponse = createErrorResponse(error);
+      logError(c, error);
       return c.json(errorResponse);
     }
   }
@@ -42,6 +43,7 @@ export class FcmTokenController {
       return c.json(createResponse(ResponseCode.SUCCESS, 'FCM 토큰 삭제 성공', null));
     } catch (error) {
       const errorResponse = createErrorResponse(error);
+      logError(c, error);
       return c.json(errorResponse);
     }
   }
