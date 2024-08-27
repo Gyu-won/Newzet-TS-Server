@@ -1,6 +1,7 @@
 import { DatabaseAccessError } from '../lib/exceptions/databaseAccessError.ts';
 import { InvalidArgumentsError } from '../lib/exceptions/invalidArgumentsError.ts';
 import { supabase } from '../lib/supabase.ts';
+import { convertToSeoulTime } from '../lib/utils/timezone.ts';
 import { Userinfo } from '../models/entities/userinfo.ts';
 
 export class UserinfoRepository {
@@ -35,6 +36,17 @@ export class UserinfoRepository {
 
     if (error) {
       throw new DatabaseAccessError('유저 닉네임 변경 실패', error.message);
+    }
+  }
+
+  async updateDeletedAt(userId: string) {
+    const { error } = await supabase
+      .from('userinfo')
+      .update({ deleted_at: convertToSeoulTime(new Date()) })
+      .eq('id', userId);
+
+    if (error) {
+      throw new DatabaseAccessError('유저 삭제 실패', error.message);
     }
   }
 

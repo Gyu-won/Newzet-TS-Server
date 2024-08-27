@@ -40,6 +40,18 @@ export class UserinfoController {
     }
   }
 
+  async deleteUserV1(c: Context) {
+    try {
+      const userId = c.get('user').id;
+      await this.userinfoService.deleteUser(userId);
+      return c.json(createResponse(ResponseCode.SUCCESS, '유저 정보 삭제 성공', null));
+    } catch (error) {
+      return c.json(
+        createResponse(ResponseCode.SERVER_ERROR, '유저 정보 삭제 실패', error.message),
+      );
+    }
+  }
+
   async getIsInitializedV1(c: Context) {
     try {
       const userId = c.get('user').id;

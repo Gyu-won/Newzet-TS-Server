@@ -36,7 +36,7 @@ export class UserCategoryRepository {
     const { error: insertError } = await supabase.from('user_category').insert(userCategories);
 
     if (insertError) {
-      throw new DatabaseAccessError('error insert user_category', insertError.message);
+      throw new DatabaseAccessError('유저 관심 카테고리 생성 실패', insertError.message);
     }
   }
 }

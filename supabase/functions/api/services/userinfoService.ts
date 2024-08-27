@@ -1,4 +1,6 @@
 import { InvalidArgumentsError } from '../lib/exceptions/invalidArgumentsError.ts';
+import { SupabaseError } from '../lib/exceptions/supabaseError.ts';
+import { supabase } from '../lib/supabase.ts';
 import { CategoryResDto } from '../models/dtos/category/categoryResDto.ts';
 import { UniqueMailResDto } from '../models/dtos/userinfo/uniqueMailResDto.ts';
 import { UserinfoInitResDto } from '../models/dtos/userinfo/userinfoInitResDto.ts';
@@ -43,10 +45,23 @@ export class UserinfoService {
     await this.userCategoryRepository.addUserCategory(userId, userinfo.userCategory);
   }
 
+  async deleteUser(userId: string) {
+    await this.userinfoRepository.updateDeletedAt(userId);
+
+    await this.deleteAuth(userId);
+  }
+
   async getIsInitialized(userId: string): Promise<UserinfoInitResDto> {
     const myInfo = await this.userinfoRepository.getUserinfo(userId);
 
     return new UserinfoInitResDto(myInfo.email != null);
+  }
+
+  private async deleteAuth(userId: string) {
+    const { error } = await supabase.auth.admin.deleteUser(userId);
+    if (error) {
+      throw new SupabaseError(`auth 삭제 실패: ${error.message}`);
+    }
   }
 
   async getIsUniqueMail(email: string): Promise<UniqueMailResDto> {
