@@ -2,6 +2,8 @@ import { Context } from 'https://deno.land/x/hono@v4.3.11/context.ts';
 import { createResponse } from '../lib/response/responseFormat.ts';
 import { ResponseCode } from '../lib/response/responseCode.ts';
 import { FcmTokenService } from '../services/fcmTokenService.ts';
+import { createErrorResponse } from '../lib/exceptions/errorHandler.ts';
+import { InvalidArgumentsError } from '../lib/exceptions/invalidArgumentsError.ts';
 
 export class FcmTokenController {
   private fcmTokenService: FcmTokenService;
@@ -11,36 +13,36 @@ export class FcmTokenController {
   }
 
   async postFCMTokenV1(c: Context) {
-    const userId = c.get('user').id;
-    const { fcmToken } = await c.req.json();
-
-    if (!fcmToken) {
-      return c.json(createResponse(ResponseCode.INVALID_ARGUMENTS, 'Missing fcmToken', null));
-    }
-
     try {
-      await this.fcmTokenService.addFCMToken(userId, fcmToken);
+      const userId = c.get('user').id;
 
+      const { fcmToken } = await c.req.json();
+      if (!fcmToken) {
+        throw new InvalidArgumentsError('Missing fcmToken');
+      }
+
+      await this.fcmTokenService.addFCMToken(userId, fcmToken);
       return c.json(createResponse(ResponseCode.SUCCESS, 'FCM 토큰 생성 성공', null));
     } catch (error) {
-      return c.json(createResponse(ResponseCode.SERVER_ERROR, 'FCM 토큰 생성 실패', error.message));
+      const errorResponse = createErrorResponse(error);
+      return c.json(errorResponse);
     }
   }
 
   async deleteFCMTokenV1(c: Context) {
-    const userId = c.get('user').id;
-    const { fcmToken } = await c.req.json();
-
-    if (!fcmToken) {
-      return c.json(createResponse(ResponseCode.INVALID_ARGUMENTS, 'Missing fcmToken', null));
-    }
-
     try {
-      await this.fcmTokenService.deleteFCMToken(userId, fcmToken);
+      const userId = c.get('user').id;
 
+      const { fcmToken } = await c.req.json();
+      if (!fcmToken) {
+        throw new InvalidArgumentsError('Missing fcmToken');
+      }
+
+      await this.fcmTokenService.deleteFCMToken(userId, fcmToken);
       return c.json(createResponse(ResponseCode.SUCCESS, 'FCM 토큰 삭제 성공', null));
     } catch (error) {
-      return c.json(createResponse(ResponseCode.SERVER_ERROR, 'FCM 토큰 삭제 실패', error.message));
+      const errorResponse = createErrorResponse(error);
+      return c.json(errorResponse);
     }
   }
 }
