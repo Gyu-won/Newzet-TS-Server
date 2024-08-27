@@ -1,4 +1,5 @@
 import { InvalidArgumentsError } from '../lib/exceptions/invalidArgumentsError.ts';
+import { SupabaseError } from '../lib/exceptions/supabaseError.ts';
 import { supabase } from '../lib/supabase.ts';
 import { CategoryResDto } from '../models/dtos/category/categoryResDto.ts';
 import { UserinfoInitResDto } from '../models/dtos/userinfo/userinfoInitResDto.ts';
@@ -58,7 +59,7 @@ export class UserinfoService {
   private async deleteAuth(userId: string) {
     const { error } = await supabase.auth.admin.deleteUser(userId);
     if (error) {
-      throw new Error(`auth user delete 실패: ${error.message}`);
+      throw new SupabaseError(`auth 삭제 실패: ${error.message}`);
     }
   }
 }
