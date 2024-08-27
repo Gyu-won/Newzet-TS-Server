@@ -19,7 +19,7 @@ export class SubscriptionRepository {
 
   async getSubscriptionListWithImage(userId: string): Promise<SubscriptionWithImageDo[]> {
     const { data: subscriptionList, error } = await supabase.rpc('get_subscription_with_image', {
-      user_id: userId,
+      uid: userId,
     });
 
     if (error) {
