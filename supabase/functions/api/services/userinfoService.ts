@@ -2,6 +2,7 @@ import { InvalidArgumentsError } from '../lib/exceptions/invalidArgumentsError.t
 import { SupabaseError } from '../lib/exceptions/supabaseError.ts';
 import { supabase } from '../lib/supabase.ts';
 import { CategoryResDto } from '../models/dtos/category/categoryResDto.ts';
+import { UniqueMailResDto } from '../models/dtos/userinfo/uniqueMailResDto.ts';
 import { UserinfoInitResDto } from '../models/dtos/userinfo/userinfoInitResDto.ts';
 import { UserinfoReqDto } from '../models/dtos/userinfo/userinfoReqDto.ts';
 import { UserinfoResDto } from '../models/dtos/userinfo/userinfoResDto.ts';
@@ -17,7 +18,7 @@ export class UserinfoService {
     this.userCategoryRepository = new UserCategoryRepository();
   }
 
-  async getUserinfo(userId: string) {
+  async getUserinfo(userId: string): Promise<UserinfoResDto> {
     const userinfo = await this.userinfoRepository.getUserinfo(userId);
     const categoryList = await this.userCategoryRepository.getUserCategoryListByUserId(userId);
 
@@ -50,7 +51,7 @@ export class UserinfoService {
     await this.deleteAuth(userId);
   }
 
-  async getIsInitialized(userId: string) {
+  async getIsInitialized(userId: string): Promise<UserinfoInitResDto> {
     const myInfo = await this.userinfoRepository.getUserinfo(userId);
 
     return new UserinfoInitResDto(myInfo.email != null);
@@ -60,6 +61,19 @@ export class UserinfoService {
     const { error } = await supabase.auth.admin.deleteUser(userId);
     if (error) {
       throw new SupabaseError(`auth 삭제 실패: ${error.message}`);
+    }
+  }
+
+  async getIsUniqueMail(email: string): Promise<UniqueMailResDto> {
+    const userinfo = await this.userinfoRepository.getUserinfoByEmail(email);
+    if (userinfo == null) {
+      return new UniqueMailResDto(true, '사용 가능한 이메일입니다.');
+    }
+
+    if (userinfo.deleted_at) {
+      return new UniqueMailResDto(false, '사용 전적이 있는 이메일입니다.');
+    } else {
+      return new UniqueMailResDto(false, '이미 사용 중인 이메일입니다.');
     }
   }
 }
