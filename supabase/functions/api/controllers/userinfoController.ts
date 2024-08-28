@@ -5,6 +5,7 @@ import { ResponseCode } from '../lib/response/responseCode.ts';
 import { UserinfoService } from '../services/userinfoService.ts';
 import { UserinfoReqDto } from '../models/dtos/userinfo/userinfoReqDto.ts';
 import { InvalidArgumentsError } from '../lib/exceptions/invalidArgumentsError.ts';
+import { createErrorResponse, logError } from '../lib/exceptions/errorHandler.ts';
 
 export class UserinfoController {
   private userinfoService: UserinfoService;
@@ -19,9 +20,9 @@ export class UserinfoController {
       const myInfo = await this.userinfoService.getUserinfo(userId);
       return c.json(createResponse(ResponseCode.SUCCESS, '유저 정보 조회 성공', myInfo));
     } catch (error) {
-      return c.json(
-        createResponse(ResponseCode.SERVER_ERROR, '유저 정보 조회 실패', error.message),
-      );
+      const errorResponse = createErrorResponse(error);
+      logError(c, error);
+      return c.json(errorResponse);
     }
   }
 
@@ -34,9 +35,9 @@ export class UserinfoController {
 
       return c.json(createResponse(ResponseCode.SUCCESS, '유저 정보 수정 성공', null));
     } catch (error) {
-      return c.json(
-        createResponse(ResponseCode.SERVER_ERROR, '유저 정보 수정 실패', error.message),
-      );
+      const errorResponse = createErrorResponse(error);
+      logError(c, error);
+      return c.json(errorResponse);
     }
   }
 
@@ -46,9 +47,9 @@ export class UserinfoController {
       await this.userinfoService.deleteUser(userId);
       return c.json(createResponse(ResponseCode.SUCCESS, '유저 정보 삭제 성공', null));
     } catch (error) {
-      return c.json(
-        createResponse(ResponseCode.SERVER_ERROR, '유저 정보 삭제 실패', error.message),
-      );
+      const errorResponse = createErrorResponse(error);
+      logError(c, error);
+      return c.json(errorResponse);
     }
   }
 
@@ -61,9 +62,9 @@ export class UserinfoController {
         createResponse(ResponseCode.SUCCESS, '유저 초기화 정보 조회 성공', isInitialized),
       );
     } catch (error) {
-      return c.json(
-        createResponse(ResponseCode.SERVER_ERROR, '유저 초기화 정보 조회 실패', error.message),
-      );
+      const errorResponse = createErrorResponse(error);
+      logError(c, error);
+      return c.json(errorResponse);
     }
   }
 
@@ -78,9 +79,9 @@ export class UserinfoController {
 
       return c.json(createResponse(ResponseCode.SUCCESS, '이메일 중복 체크 성공', isUnique));
     } catch (error) {
-      return c.json(
-        createResponse(ResponseCode.SERVER_ERROR, '이메일 중복 체크 실패', error.message),
-      );
+      const errorResponse = createErrorResponse(error);
+      logError(c, error);
+      return c.json(errorResponse);
     }
   }
 }
