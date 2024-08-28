@@ -2,6 +2,7 @@ import { ApiFactory } from 'https://deno.land/x/aws_api@v0.8.1/client/mod.ts';
 import { S3 } from 'https://deno.land/x/aws_api@v0.8.1/services/s3/mod.ts';
 import { awsAccessKey, awsMailBucket, awsRegion, awsSecretKey } from '../environments.ts';
 import { ArticleService } from '../api/services/articleService.ts';
+import { SupabaseError } from '../api/lib/exceptions/supabaseError.ts';
 
 const articleService = new ArticleService();
 const factory = new ApiFactory({
@@ -44,17 +45,18 @@ async function getObjectFromS3(bucketName: string, objectKey: string) {
 }
 
 async function parseEmailContent(responseBody: ReadableStream<Uint8Array>) {
-  const emailContent = new TextDecoder('utf-8').decode(
+  const mailContent = new TextDecoder('utf-8').decode(
     await new Response(responseBody).arrayBuffer(),
   );
 
-  const mimeHeaderMatch = emailContent.match(/MIME-Version:.*?\r?\n\r?\n/s);
-  if (!mimeHeaderMatch) {
-    throw new Error('S3 MIME 데이터 타입 에러');
+  const [headerSection, bodySection] = mailContent.split(/\r?\n\r?\n/, 1);
+  const mimeVersionIndex = headerSection.indexOf('MIME-Version: 1.0');
+  if (mimeVersionIndex === -1) {
+    throw new SupabaseError('MIME-Version 1.0이 아님');
   }
 
-  const headersSection = mimeHeaderMatch[0].trim();
-  const headerLines = headersSection.split(/\r?\n/);
+  const header = headerSection.substring(mimeVersionIndex);
+  const headerLines = header.split(/\r?\n/);
 
   let from = '';
   let to = '';
