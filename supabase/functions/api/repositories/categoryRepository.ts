@@ -11,4 +11,17 @@ export class CategoryRepository {
     }
     return categoryList as Category[];
   }
+
+  async getCategoryById(id: string): Promise<Category> {
+    const { data: category, error } = await supabase
+      .from('category')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error) {
+      throw new DatabaseAccessError('카테고리 Id로 조회 실패', error.message);
+    }
+    return category;
+  }
 }

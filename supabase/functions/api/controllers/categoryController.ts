@@ -4,6 +4,7 @@ import { createResponse } from '../lib/response/responseFormat.ts';
 import { ResponseCode } from '../lib/response/responseCode.ts';
 import { CategoryListResDto } from '../models/dtos/category/categoryListResDto.ts';
 import { CategoryService } from '../services/categoryService.ts';
+import { createErrorResponse, logError } from '../lib/exceptions/errorHandler.ts';
 
 export class CategoryController {
   private categoryService: CategoryService;
@@ -17,9 +18,9 @@ export class CategoryController {
       const categoryList: CategoryListResDto = await this.categoryService.getCategoryList();
       return c.json(createResponse(ResponseCode.SUCCESS, '카테고리 목록 조회 성공', categoryList));
     } catch (error) {
-      return c.json(
-        createResponse(ResponseCode.INVALID_ARGUMENTS, '카테고리 목록 조회 실패', error.message),
-      );
+      const errorResponse = createErrorResponse(error);
+      logError(c, error);
+      return c.json(errorResponse);
     }
   }
 }
