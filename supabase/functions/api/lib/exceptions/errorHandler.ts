@@ -15,6 +15,9 @@ export function createErrorResponse(error: Error) {
     case 'SupabaseError':
       responseCode = ResponseCode.SUPABASE_ERROR;
       break;
+    case 'S3AccessError':
+      responseCode = ResponseCode.S3_ACCESS_ERROR;
+      break;
     default:
       responseCode = ResponseCode.SERVER_ERROR;
       break;
