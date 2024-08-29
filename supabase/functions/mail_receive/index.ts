@@ -23,6 +23,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
       mailContent.subject,
       objectKey,
     );
+    await subscriptionService.addSubscription(userinfo.id, fromName, fromDomain);
 
     return new Response(JSON.stringify({ status: 'success' }), { status: 200 });
   } catch (error) {
