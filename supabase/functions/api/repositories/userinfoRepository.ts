@@ -54,7 +54,7 @@ export class UserinfoRepository {
     const { data: userinfo, error } = await supabase
       .from('userinfo')
       .select('*')
-      .eq('email', `${email}@newzet.me`)
+      .eq('email', email)
       .maybeSingle();
 
     if (error) {

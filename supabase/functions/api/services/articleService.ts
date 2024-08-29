@@ -32,7 +32,7 @@ export class ArticleService {
     title: string,
     objectKey: string,
   ) {
-    const userinfo = await this.userinfoRepository.getUserinfoByEmail(to.split('@')[0]);
+    const userinfo = await this.userinfoRepository.getUserinfoByEmail(to);
     if (userinfo == null || userinfo.deleted_at) {
       throw new InvalidArgumentsError('존재하지 않는 사용자의 메일에 메일이 도착했습니다');
     }
