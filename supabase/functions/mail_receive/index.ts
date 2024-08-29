@@ -1,3 +1,4 @@
+import { InvalidArgumentsError } from '../api/lib/exceptions/invalidArgumentsError.ts';
 import { ArticleService } from '../api/services/articleService.ts';
 import { getMailContent } from '../lib/s3Utils.ts';
 
@@ -19,6 +20,9 @@ Deno.serve(async (req: Request): Promise<Response> => {
     );
     return new Response(JSON.stringify({ status: 'success' }), { status: 200 });
   } catch (error) {
+    if (error instanceof InvalidArgumentsError) {
+      return new Response(JSON.stringify({ status: 'success' }), { status: 200 });
+    }
     console.error(error.message);
     return new Response(JSON.stringify({ status: 'error', message: error.message }), {
       status: 500,
