@@ -5,20 +5,7 @@ import { ArticleResDto } from '../models/dtos/article/articleResDto.ts';
 import { ArticleWithImageDao } from '../models/daos/articleWithImageDao.ts';
 import { InvalidArgumentsError } from '../lib/exceptions/invalidArgumentsError.ts';
 import { ArticleContentResDto } from '../models/dtos/article/articleContentResDto.ts';
-import { ApiFactory } from 'https://deno.land/x/aws_api@v0.8.1/client/mod.ts';
-import { S3 } from 'https://deno.land/x/aws_api@v0.8.1/services/s3/mod.ts';
-import { awsAccessKey, awsMailBucket, awsRegion, awsSecretKey } from '../../environments.ts';
-import { s3AccessError } from '../lib/exceptions/s3AccessError.ts';
-import { simpleParser } from 'npm:mailparser';
-
-const factory = new ApiFactory({
-  region: awsRegion,
-  credentials: {
-    awsAccessKeyId: awsAccessKey,
-    awsSecretKey: awsSecretKey,
-  },
-});
-const s3 = factory.makeNew(S3);
+import { getMailContent } from '../../lib/s3Utils.ts';
 
 export class ArticleService {
   private articleRepository: ArticleRepository;
@@ -54,25 +41,7 @@ export class ArticleService {
 
   async getArticle(articleId: string): Promise<ArticleContentResDto> {
     const article = await this.articleRepository.getArticle(articleId);
-    const mailContent = await this.getMailContentFromS3(awsMailBucket, article.object_key);
-    const parsedMailContent = await simpleParser(mailContent);
-    return new ArticleContentResDto(parsedMailContent.subject, parsedMailContent.html);
-  }
-
-  private async getMailContentFromS3(bucketName: string, objectKey: string) {
-    const response = await s3.getObject({
-      Bucket: bucketName,
-      Key: objectKey,
-    });
-
-    if (!response.Body) {
-      throw new s3AccessError('S3 데이터 조회 실패');
-    }
-
-    return await this.decodeUtf8(response.Body);
-  }
-
-  private async decodeUtf8(responseBody: ReadableStream): Promise<string> {
-    return new TextDecoder('utf-8').decode(await new Response(responseBody).arrayBuffer());
+    const mailContent = await getMailContent(article.object_key);
+    return new ArticleContentResDto(mailContent.subject, mailContent.html);
   }
 }
