@@ -36,11 +36,12 @@ export class ArticleRepository {
     }
   }
 
-  async getArticle(articleId: string): Promise<Article> {
+  async getArticleAndRead(articleId: string): Promise<Article> {
     const { data: article, error } = await supabase
       .from('article')
-      .select('*')
+      .update({ is_read: true })
       .eq('id', articleId)
+      .select('*')
       .single();
 
     if (error) {
