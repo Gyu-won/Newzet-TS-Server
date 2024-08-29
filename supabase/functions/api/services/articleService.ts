@@ -3,7 +3,6 @@ import { UserinfoRepository } from '../repositories/userinfoRepository.ts';
 import { ArticleListResDto } from '../models/dtos/article/articleListResDto.ts';
 import { ArticleResDto } from '../models/dtos/article/articleResDto.ts';
 import { ArticleWithImageDao } from '../models/daos/articleWithImageDao.ts';
-import { InvalidArgumentsError } from '../lib/exceptions/invalidArgumentsError.ts';
 import { ArticleContentResDto } from '../models/dtos/article/articleContentResDto.ts';
 import { getMailContent } from '../../lib/s3Utils.ts';
 
@@ -26,21 +25,17 @@ export class ArticleService {
   }
 
   async addArticle(
-    to: string,
+    userId: string,
     fromName: string,
     fromDomain: string,
     title: string,
     contentUrl: string,
   ) {
-    const userinfo = await this.userinfoRepository.getUserinfoByEmail(to.split('@')[0]);
-    if (userinfo == null || userinfo.deleted_at) {
-      throw new InvalidArgumentsError('존재하지 않는 사용자의 메일에 메일이 도착했습니다');
-    }
-    await this.articleRepository.addArticle(userinfo.id, fromName, fromDomain, title, contentUrl);
+    await this.articleRepository.addArticle(userId, fromName, fromDomain, title, contentUrl);
   }
 
-  async getArticle(articleId: string): Promise<ArticleContentResDto> {
-    const article = await this.articleRepository.getArticle(articleId);
+  async getArticleAndRead(articleId: string): Promise<ArticleContentResDto> {
+    const article = await this.articleRepository.getArticleAndRead(articleId);
     const mailContent = await getMailContent(article.content_url);
     return new ArticleContentResDto(mailContent.subject, mailContent.html);
   }

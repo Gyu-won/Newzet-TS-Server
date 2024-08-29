@@ -28,4 +28,18 @@ export class SubscriptionRepository {
 
     return subscriptionList;
   }
+
+  async addSubscription(userId: string, newsletterName: string, newsletterDomain: string) {
+    const { error: insertError } = await supabase.from('subscription').insert([
+      {
+        user_id: userId,
+        newsletter_name: newsletterName,
+        newsletter_domain: newsletterDomain,
+      },
+    ]);
+
+    if (insertError) {
+      throw new DatabaseAccessError('subscription 추가 실패', insertError.message);
+    }
+  }
 }
