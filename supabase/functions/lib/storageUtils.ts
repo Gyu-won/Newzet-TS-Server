@@ -13,3 +13,13 @@ export async function uploadHtml(objectKey: string, html: string): Promise<strin
 
   return data.path;
 }
+
+export async function getContent(contentUrl: string): Promise<string> {
+  const { data, error } = await supabase.storage.from(mailStorage).download(contentUrl);
+
+  if (error) {
+    throw new StorageAccessError(`mail content 조회 실패: ${error.message}`);
+  }
+
+  return await data.text();
+}

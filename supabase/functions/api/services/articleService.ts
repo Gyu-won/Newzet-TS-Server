@@ -3,7 +3,7 @@ import { ArticleListResDto } from '../models/dtos/article/articleListResDto.ts';
 import { ArticleResDto } from '../models/dtos/article/articleResDto.ts';
 import { ArticleWithImageDao } from '../models/daos/articleWithImageDao.ts';
 import { ArticleContentResDto } from '../models/dtos/article/articleContentResDto.ts';
-import { getMailContent } from '../../lib/s3Utils.ts';
+import { getContent } from '../../lib/storageUtils.ts';
 
 export class ArticleService {
   private articleRepository: ArticleRepository;
@@ -33,7 +33,7 @@ export class ArticleService {
 
   async getArticleAndRead(articleId: string): Promise<ArticleContentResDto> {
     const article = await this.articleRepository.getArticleAndRead(articleId);
-    const mailContent = await getMailContent(article.content_url);
-    return new ArticleContentResDto(mailContent.subject, mailContent.html);
+    const content = await getContent(article.content_url);
+    return new ArticleContentResDto(article.title, content);
   }
 }
