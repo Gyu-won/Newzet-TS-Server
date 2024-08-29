@@ -30,18 +30,18 @@ export class ArticleService {
     fromName: string,
     fromDomain: string,
     title: string,
-    objectKey: string,
+    contentUrl: string,
   ) {
     const userinfo = await this.userinfoRepository.getUserinfoByEmail(to.split('@')[0]);
     if (userinfo == null || userinfo.deleted_at) {
       throw new InvalidArgumentsError('존재하지 않는 사용자의 메일에 메일이 도착했습니다');
     }
-    await this.articleRepository.addArticle(userinfo.id, fromName, fromDomain, title, objectKey);
+    await this.articleRepository.addArticle(userinfo.id, fromName, fromDomain, title, contentUrl);
   }
 
   async getArticle(articleId: string): Promise<ArticleContentResDto> {
     const article = await this.articleRepository.getArticle(articleId);
-    const mailContent = await getMailContent(article.object_key);
+    const mailContent = await getMailContent(article.content_url);
     return new ArticleContentResDto(mailContent.subject, mailContent.html);
   }
 }
