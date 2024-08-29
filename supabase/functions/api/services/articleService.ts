@@ -4,6 +4,8 @@ import { ArticleListResDto } from '../models/dtos/article/articleListResDto.ts';
 import { ArticleResDto } from '../models/dtos/article/articleResDto.ts';
 import { ArticleWithImageDao } from '../models/daos/articleWithImageDao.ts';
 import { InvalidArgumentsError } from '../lib/exceptions/invalidArgumentsError.ts';
+import { ArticleContentResDto } from '../models/dtos/article/articleContentResDto.ts';
+import { getMailContent } from '../../lib/s3Utils.ts';
 
 export class ArticleService {
   private articleRepository: ArticleRepository;
@@ -35,5 +37,11 @@ export class ArticleService {
       throw new InvalidArgumentsError('존재하지 않는 사용자의 메일에 메일이 도착했습니다');
     }
     await this.articleRepository.addArticle(userinfo.id, fromName, fromDomain, title, objectKey);
+  }
+
+  async getArticle(articleId: string): Promise<ArticleContentResDto> {
+    const article = await this.articleRepository.getArticle(articleId);
+    const mailContent = await getMailContent(article.object_key);
+    return new ArticleContentResDto(mailContent.subject, mailContent.html);
   }
 }

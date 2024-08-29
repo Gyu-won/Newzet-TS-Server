@@ -24,4 +24,16 @@ export class ArticleController {
       return c.json(errorResponse);
     }
   }
+
+  async getArticleV1(c: Context) {
+    try {
+      const articleId = c.req.param('articleId') ?? '';
+      const article = await this.articleService.getArticle(articleId);
+      return c.json(createResponse(ResponseCode.SUCCESS, '아티클 조회 성공', article));
+    } catch (error) {
+      const errorResponse = createErrorResponse(error);
+      logError(c, error);
+      return c.json(errorResponse);
+    }
+  }
 }

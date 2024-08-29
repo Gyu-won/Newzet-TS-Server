@@ -8,5 +8,6 @@ const articleController = new ArticleController();
 articleRouter.use(authMiddleware);
 
 articleRouter.get('', (c) => articleController.getArticleListV1(c));
+articleRouter.get('/:articleId', (c) => articleController.getArticleV1(c));
 
 export default articleRouter;
