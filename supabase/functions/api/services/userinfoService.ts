@@ -66,7 +66,7 @@ export class UserinfoService {
   }
 
   async getIsUniqueMail(email: string): Promise<UniqueMailResDto> {
-    const userinfo = await this.userinfoRepository.getUserinfoByEmail(email);
+    const userinfo = await this.userinfoRepository.getUserinfoByEmail(`${email}@newzet.me`);
     if (userinfo == null) {
       return new UniqueMailResDto(true, '사용 가능한 이메일입니다.');
     }
