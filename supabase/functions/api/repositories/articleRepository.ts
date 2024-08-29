@@ -36,7 +36,7 @@ export class ArticleRepository {
     }
   }
 
-  async getArticle(articleId: string): Promise<Article> {
+  async getArticleAndRead(articleId: string): Promise<Article> {
     const { data: article, error } = await supabase
       .from('article')
       .update({ is_read: true })

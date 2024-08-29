@@ -39,8 +39,8 @@ export class ArticleService {
     await this.articleRepository.addArticle(userinfo.id, fromName, fromDomain, title, objectKey);
   }
 
-  async getArticle(articleId: string): Promise<ArticleContentResDto> {
-    const article = await this.articleRepository.getArticle(articleId);
+  async getArticleAndRead(articleId: string): Promise<ArticleContentResDto> {
+    const article = await this.articleRepository.getArticleAndRead(articleId);
     const mailContent = await getMailContent(article.object_key);
     return new ArticleContentResDto(mailContent.subject, mailContent.html);
   }
