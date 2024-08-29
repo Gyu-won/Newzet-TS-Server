@@ -3,7 +3,7 @@ import { ArticleService } from '../api/services/articleService.ts';
 import { SubscriptionService } from '../api/services/subscriptionService.ts';
 import { UserinfoService } from '../api/services/userinfoService.ts';
 import { getMailContent } from '../lib/s3Utils.ts';
-import { uploadHtml } from '../lib/storageUtils.ts';
+import { uploadContent } from '../lib/storageUtils.ts';
 
 const userinfoService = new UserinfoService();
 const articleService = new ArticleService();
@@ -15,7 +15,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
     const mailContent = await getMailContent(objectKey);
 
     const { fromName, fromDomain } = parseFrom(mailContent.from?.text);
-    const contentUrl = await uploadHtml(objectKey, mailContent.html);
+    const contentUrl = await uploadContent(objectKey, mailContent.html);
 
     const userinfo = await userinfoService.getUserinfoByEmail(mailContent.to?.text);
     await articleService.addArticle(
