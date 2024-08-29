@@ -9,7 +9,7 @@ import { ApiFactory } from 'https://deno.land/x/aws_api@v0.8.1/client/mod.ts';
 import { S3 } from 'https://deno.land/x/aws_api@v0.8.1/services/s3/mod.ts';
 import { awsAccessKey, awsMailBucket, awsRegion, awsSecretKey } from '../../environments.ts';
 import { s3AccessError } from '../lib/exceptions/s3AccessError.ts';
-import { SupabaseError } from '../lib/exceptions/supabaseError.ts';
+import { simpleParser } from 'npm:mailparser';
 
 const factory = new ApiFactory({
   region: awsRegion,
@@ -54,12 +54,9 @@ export class ArticleService {
 
   async getArticle(articleId: string): Promise<ArticleContentResDto> {
     const article = await this.articleRepository.getArticle(articleId);
-    const encodedMailContent = await this.getMailContentFromS3(awsMailBucket, article.object_key);
-    const mailContent = new TextDecoder('utf-8').decode(
-      await new Response(encodedMailContent).arrayBuffer(),
-    );
-    const content = this.parseMailContent(mailContent);
-    return new ArticleContentResDto(article.title, content);
+    const mailContent = await this.getMailContentFromS3(awsMailBucket, article.object_key);
+    const parsedMailContent = await simpleParser(mailContent);
+    return new ArticleContentResDto(parsedMailContent.subject, parsedMailContent.html);
   }
 
   private async getMailContentFromS3(bucketName: string, objectKey: string) {
@@ -72,64 +69,10 @@ export class ArticleService {
       throw new s3AccessError('S3 데이터 조회 실패');
     }
 
-    return response.Body;
+    return await this.decodeUtf8(response.Body);
   }
 
-  private parseMailContent(mailContent: string) {
-    const [headerSection, bodySection] = mailContent.split(/\r?\n\r?\n/, 2);
-    const mimeVersionIndex = headerSection.indexOf('MIME-Version: 1.0');
-    if (mimeVersionIndex === -1) {
-      throw new SupabaseError('MIME-Version 1.0이 아님');
-    }
-
-    const header = headerSection.substring(mimeVersionIndex);
-    const contentType = header.split('Content-Type:')[1].trim();
-
-    // stibee도 multipart로 오는데 multipart 아닌게 뭐가 있을까?
-    const boundary = this.extractBoundary(contentType);
-    return this.extractHtmlContent(bodySection, boundary);
-  }
-
-  private extractBoundary(contentType: string): string {
-    const boundaryMatch = contentType.match(/boundary="([^"]+)"/);
-    if (!boundaryMatch) {
-      throw new SupabaseError('multipart에 Boundary 필드 없음 에러');
-    }
-    return boundaryMatch[1];
-  }
-
-  private extractHtmlContent(bodySection: string, boundary: string): string {
-    const parts = bodySection.split(`--${boundary}`);
-    let content = '';
-
-    for (const part of parts) {
-      const contentTypeMatch = part.match(/Content-Type:\s*([^;\r\n]+)/);
-      if (contentTypeMatch) {
-        const partContentType = contentTypeMatch[1].trim();
-        if (partContentType === 'text/html') {
-          const htmlPart = part
-            .split(/\r?\n\r?\n/)
-            .slice(1)
-            .join('\r\n\r\n')
-            .trim();
-          content += this.decodeMessageBody(htmlPart);
-        }
-      }
-    }
-    return content;
-  }
-
-  private decodeMessageBody(messageBody: string): string {
-    const bodyData: string = messageBody.replace(/-/g, '+').replace(/_/g, '/');
-    return this.decodeBase64(bodyData);
-  }
-
-  private decodeBase64(base64: string) {
-    const binaryString = atob(base64);
-    const bytes = new Uint8Array(binaryString.length);
-    for (let i = 0; i < binaryString.length; i++) {
-      bytes[i] = binaryString.charCodeAt(i);
-    }
-    return new TextDecoder().decode(bytes);
+  private async decodeUtf8(responseBody: ReadableStream): Promise<string> {
+    return new TextDecoder('utf-8').decode(await new Response(responseBody).arrayBuffer());
   }
 }
