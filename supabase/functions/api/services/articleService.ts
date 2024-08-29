@@ -1,5 +1,4 @@
 import { ArticleRepository } from '../repositories/articleRepository.ts';
-import { UserinfoRepository } from '../repositories/userinfoRepository.ts';
 import { ArticleListResDto } from '../models/dtos/article/articleListResDto.ts';
 import { ArticleResDto } from '../models/dtos/article/articleResDto.ts';
 import { ArticleWithImageDao } from '../models/daos/articleWithImageDao.ts';
@@ -8,11 +7,9 @@ import { getMailContent } from '../../lib/s3Utils.ts';
 
 export class ArticleService {
   private articleRepository: ArticleRepository;
-  private userinfoRepository: UserinfoRepository;
 
   constructor() {
     this.articleRepository = new ArticleRepository();
-    this.userinfoRepository = new UserinfoRepository();
   }
 
   async getArticleList(userId: string): Promise<ArticleListResDto> {
