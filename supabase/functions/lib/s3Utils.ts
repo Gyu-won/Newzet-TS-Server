@@ -1,7 +1,7 @@
 import { ApiFactory } from 'https://deno.land/x/aws_api@v0.8.1/client/mod.ts';
 import { S3 } from 'https://deno.land/x/aws_api@v0.8.1/services/s3/mod.ts';
 import { awsAccessKey, awsMailBucket, awsRegion, awsSecretKey } from '../environments.ts';
-import { s3AccessError } from '../api/lib/exceptions/s3AccessError.ts';
+import { S3AccessError } from '../api/lib/exceptions/s3AccessError.ts';
 import { simpleParser, ParsedMail } from 'npm:mailparser';
 
 const factory = new ApiFactory({
@@ -27,7 +27,7 @@ async function getMailContentFromS3(objectKey: string): Promise<ReadableStream> 
   });
 
   if (!response.Body) {
-    throw new s3AccessError('S3 데이터 조회 실패');
+    throw new S3AccessError('S3 데이터 조회 실패');
   }
 
   return response.Body;
