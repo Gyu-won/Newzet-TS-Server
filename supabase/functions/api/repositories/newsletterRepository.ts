@@ -34,4 +34,16 @@ export class NewsletterRepository {
     }
     return newsletterList;
   }
+
+  async getNewsletterByDomain(domain: string): Promise<Newsletter | null> {
+    const { data: newsletter, error } = await supabase
+      .from('newsletter')
+      .select('*')
+      .eq('domain', domain)
+      .maybeSingle();
+    if (error) {
+      throw new DatabaseAccessError('뉴스레터 조회 실패', error.message);
+    }
+    return newsletter;
+  }
 }

@@ -1,8 +1,12 @@
 import { InvalidArgumentsError } from '../api/lib/exceptions/invalidArgumentsError.ts';
 import { ArticleService } from '../api/services/articleService.ts';
+import { SubscriptionService } from '../api/services/subscriptionService.ts';
+import { UserinfoService } from '../api/services/userinfoService.ts';
 import { getMailContent } from '../lib/s3Utils.ts';
 
+const userinfoService = new UserinfoService();
 const articleService = new ArticleService();
+const subscriptionService = new SubscriptionService();
 
 Deno.serve(async (req: Request): Promise<Response> => {
   try {
@@ -11,13 +15,16 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
     const { fromName, fromDomain } = parseFrom(mailContent.from?.text);
 
+    const userinfo = await userinfoService.getUserinfoByEmail(mailContent.to?.text);
     await articleService.addArticle(
-      mailContent.to?.text,
+      userinfo.id,
       fromName,
       fromDomain,
       mailContent.subject,
       objectKey,
     );
+    await subscriptionService.addSubscription(userinfo.id, fromName, fromDomain);
+
     return new Response(JSON.stringify({ status: 'success' }), { status: 200 });
   } catch (error) {
     if (error instanceof InvalidArgumentsError) {
