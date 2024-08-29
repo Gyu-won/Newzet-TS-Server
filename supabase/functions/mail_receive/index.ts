@@ -33,7 +33,7 @@ function parseFrom(from: string) {
   let fromDomain = '';
 
   if (match) {
-    fromName = match[1].trim();
+    fromName = match[1].trim().replace(/^["']|["']$/g, '');
     fromDomain = match[2].trim();
   }
   return { fromName, fromDomain };
