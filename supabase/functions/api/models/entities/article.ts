@@ -4,7 +4,7 @@ export interface Article {
   from_name: string;
   from_domain: string;
   title: string;
-  content_url: string;
+  object_key: string;
   is_read: boolean;
   created_at: string;
   deleted_at: string | null;
