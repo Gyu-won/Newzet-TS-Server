@@ -18,6 +18,9 @@ export function createErrorResponse(error: Error) {
     case 'S3AccessError':
       responseCode = ResponseCode.S3_ACCESS_ERROR;
       break;
+    case 'StorageAccessError':
+      responseCode = ResponseCode.STORAGE_ACCESS_ERROR;
+      break;
     default:
       responseCode = ResponseCode.SERVER_ERROR;
       break;
