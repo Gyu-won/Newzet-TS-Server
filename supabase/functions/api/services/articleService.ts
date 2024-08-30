@@ -1,18 +1,16 @@
 import { ArticleRepository } from '../repositories/articleRepository.ts';
-import { UserinfoRepository } from '../repositories/userinfoRepository.ts';
 import { ArticleListResDto } from '../models/dtos/article/articleListResDto.ts';
 import { ArticleResDto } from '../models/dtos/article/articleResDto.ts';
 import { ArticleWithImageDao } from '../models/daos/articleWithImageDao.ts';
 import { ArticleContentResDto } from '../models/dtos/article/articleContentResDto.ts';
-import { getMailContent } from '../../lib/s3Utils.ts';
+import { getContent } from '../../lib/storageUtils.ts';
+import { Article } from '../models/entities/article.ts';
 
 export class ArticleService {
   private articleRepository: ArticleRepository;
-  private userinfoRepository: UserinfoRepository;
 
   constructor() {
     this.articleRepository = new ArticleRepository();
-    this.userinfoRepository = new UserinfoRepository();
   }
 
   async getArticleList(userId: string): Promise<ArticleListResDto> {
@@ -29,14 +27,14 @@ export class ArticleService {
     fromName: string,
     fromDomain: string,
     title: string,
-    objectKey: string,
-  ) {
-    await this.articleRepository.addArticle(userId, fromName, fromDomain, title, objectKey);
+    contentUrl: string,
+  ): Promise<Article> {
+    return await this.articleRepository.addArticle(userId, fromName, fromDomain, title, contentUrl);
   }
 
   async getArticleAndRead(articleId: string): Promise<ArticleContentResDto> {
     const article = await this.articleRepository.getArticleAndRead(articleId);
-    const mailContent = await getMailContent(article.object_key);
-    return new ArticleContentResDto(mailContent.subject, mailContent.html);
+    const content = await getContent(article.content_url);
+    return new ArticleContentResDto(article.title, content);
   }
 }
