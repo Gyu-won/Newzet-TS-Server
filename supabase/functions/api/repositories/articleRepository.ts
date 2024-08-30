@@ -19,7 +19,7 @@ export class ArticleRepository {
     fromName: string,
     fromDomain: string,
     title: string,
-    objectKey: string,
+    contentUrl: string,
   ) {
     const { error: insertError } = await supabase.from('article').insert([
       {
@@ -27,7 +27,7 @@ export class ArticleRepository {
         from_name: fromName,
         from_domain: fromDomain,
         title: title,
-        object_key: objectKey,
+        content_url: contentUrl,
       },
     ]);
 
