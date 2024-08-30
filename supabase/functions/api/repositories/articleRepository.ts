@@ -20,20 +20,26 @@ export class ArticleRepository {
     fromDomain: string,
     title: string,
     contentUrl: string,
-  ) {
-    const { error: insertError } = await supabase.from('article').insert([
-      {
-        to_user_id: toUserId,
-        from_name: fromName,
-        from_domain: fromDomain,
-        title: title,
-        content_url: contentUrl,
-      },
-    ]);
+  ): Promise<Article> {
+    const { data: article, error: insertError } = await supabase
+      .from('article')
+      .insert([
+        {
+          to_user_id: toUserId,
+          from_name: fromName,
+          from_domain: fromDomain,
+          title: title,
+          content_url: contentUrl,
+        },
+      ])
+      .select()
+      .single();
 
     if (insertError) {
       throw new DatabaseAccessError('article 추가 실패', insertError.message);
     }
+
+    return article;
   }
 
   async getArticleAndRead(articleId: string): Promise<Article> {
