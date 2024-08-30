@@ -4,6 +4,7 @@ import { ArticleResDto } from '../models/dtos/article/articleResDto.ts';
 import { ArticleWithImageDao } from '../models/daos/articleWithImageDao.ts';
 import { ArticleContentResDto } from '../models/dtos/article/articleContentResDto.ts';
 import { getContent } from '../../lib/storageUtils.ts';
+import { Article } from '../models/entities/article.ts';
 
 export class ArticleService {
   private articleRepository: ArticleRepository;
@@ -27,8 +28,8 @@ export class ArticleService {
     fromDomain: string,
     title: string,
     contentUrl: string,
-  ) {
-    await this.articleRepository.addArticle(userId, fromName, fromDomain, title, contentUrl);
+  ): Promise<Article> {
+    return await this.articleRepository.addArticle(userId, fromName, fromDomain, title, contentUrl);
   }
 
   async getArticleAndRead(articleId: string): Promise<ArticleContentResDto> {
