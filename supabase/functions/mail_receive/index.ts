@@ -1,8 +1,6 @@
 import { InvalidArgumentsError } from '../api/lib/exceptions/invalidArgumentsError.ts';
-import { UserinfoInitResDto } from '../api/models/dtos/userinfo/userinfoInitResDto.ts';
 import { ArticleService } from '../api/services/articleService.ts';
 import { FcmNotificationService } from '../api/services/fcmNotificationService.ts';
-import { FcmTokenService } from '../api/services/fcmTokenService.ts';
 import { SubscriptionService } from '../api/services/subscriptionService.ts';
 import { UserinfoService } from '../api/services/userinfoService.ts';
 import { getMailContent } from '../lib/s3Utils.ts';
