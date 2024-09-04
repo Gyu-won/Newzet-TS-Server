@@ -13,8 +13,12 @@ export class ArticleService {
     this.articleRepository = new ArticleRepository();
   }
 
-  async getArticleList(userId: string): Promise<ArticleListResDto> {
-    const articleList: ArticleWithImageDao[] = await this.articleRepository.getArticleList(userId);
+  async getArticleList(userId: string, year: number, month: number): Promise<ArticleListResDto> {
+    const articleList: ArticleWithImageDao[] = await this.articleRepository.getArticleList(
+      userId,
+      year,
+      month,
+    );
 
     const articleListDto = new ArticleListResDto(
       articleList.map((article) => new ArticleResDto(article)),

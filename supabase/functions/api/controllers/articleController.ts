@@ -5,6 +5,7 @@ import { ResponseCode } from '../lib/response/responseCode.ts';
 import { ArticleService } from '../services/articleService.ts';
 import { ArticleListResDto } from '../models/dtos/article/articleListResDto.ts';
 import { createErrorResponse, logError } from '../lib/exceptions/errorHandler.ts';
+import { InvalidArgumentsError } from '../lib/exceptions/invalidArgumentsError.ts';
 
 export class ArticleController {
   private articleService: ArticleService;
@@ -16,7 +17,16 @@ export class ArticleController {
   async getArticleListV1(c: Context) {
     try {
       const userId = c.get('user').id;
-      const articleList: ArticleListResDto = await this.articleService.getArticleList(userId);
+      const year = parseInt(c.req.query('y') ?? '0');
+      const month = parseInt(c.req.query('m') ?? '0');
+      if (year == 0 || month < 1 || month > 12) {
+        throw new InvalidArgumentsError('올바르지 않은 년/월 입력');
+      }
+      const articleList: ArticleListResDto = await this.articleService.getArticleList(
+        userId,
+        year,
+        month,
+      );
       return c.json(createResponse(ResponseCode.SUCCESS, '아티클 목록 조회 성공', articleList));
     } catch (error) {
       const errorResponse = createErrorResponse(error);
