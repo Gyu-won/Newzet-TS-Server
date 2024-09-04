@@ -5,6 +5,7 @@ import { ArticleWithImageDao } from '../models/daos/articleWithImageDao.ts';
 import { ArticleContentResDto } from '../models/dtos/article/articleContentResDto.ts';
 import { getContent } from '../../lib/storageUtils.ts';
 import { Article } from '../models/entities/article.ts';
+import { DailyArticleResDto } from '../models/dtos/article/dailyArticleResDto.ts';
 
 export class ArticleService {
   private articleRepository: ArticleRepository;
@@ -20,10 +21,22 @@ export class ArticleService {
       month,
     );
 
-    const articleListDto = new ArticleListResDto(
-      articleList.map((article) => new ArticleResDto(article)),
-    );
-    return articleListDto;
+    const groupedByDay: { [key: number]: ArticleResDto[] } = {};
+
+    articleList.forEach((article) => {
+      const day = new Date(article.created_at).getDate();
+      if (!groupedByDay[day]) {
+        groupedByDay[day] = [];
+      }
+      groupedByDay[day].push(new ArticleResDto(article));
+    });
+
+    const dailyArticleList: DailyArticleResDto[] = Object.keys(groupedByDay).map((dayStr) => {
+      const day = parseInt(dayStr, 10);
+      return { day: day, articleList: groupedByDay[day] };
+    });
+
+    return new ArticleListResDto(dailyArticleList);
   }
 
   async addArticle(
