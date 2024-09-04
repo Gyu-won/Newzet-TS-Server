@@ -20,22 +20,8 @@ export class ArticleService {
       year,
       month,
     );
-
-    const groupedByDay: { [key: number]: ArticleResDto[] } = {};
-
-    articleList.forEach((article) => {
-      const day = new Date(article.created_at).getDate();
-      if (!groupedByDay[day]) {
-        groupedByDay[day] = [];
-      }
-      groupedByDay[day].push(new ArticleResDto(article));
-    });
-
-    const dailyArticleList: DailyArticleResDto[] = Object.keys(groupedByDay).map((dayStr) => {
-      const day = parseInt(dayStr, 10);
-      return { day: day, articleList: groupedByDay[day] };
-    });
-
+    const groupedArticleByDay = this.groupArticleByDay(articleList);
+    const dailyArticleList = this.mapToDailyArticleList(groupedArticleByDay);
     return new ArticleListResDto(dailyArticleList);
   }
 
@@ -53,5 +39,28 @@ export class ArticleService {
     const article = await this.articleRepository.getArticleAndRead(articleId);
     const content = await getContent(article.content_url);
     return new ArticleContentResDto(article.title, content);
+  }
+
+  private groupArticleByDay(articleList: ArticleWithImageDao[]) {
+    const groupedArticleByDay: { [key: number]: ArticleResDto[] } = {};
+
+    articleList.forEach((article) => {
+      const day = new Date(article.created_at).getDate();
+      if (!groupedArticleByDay[day]) {
+        groupedArticleByDay[day] = [];
+      }
+      groupedArticleByDay[day].push(new ArticleResDto(article));
+    });
+    return groupedArticleByDay;
+  }
+
+  private mapToDailyArticleList(groupedArticleByDay: {
+    [key: number]: ArticleResDto[];
+  }): DailyArticleResDto[] {
+    const dailyArticleList = Object.keys(groupedArticleByDay).map((dayStr) => {
+      const day = parseInt(dayStr, 10);
+      return { day: day, articleList: groupedArticleByDay[day] };
+    });
+    return dailyArticleList;
   }
 }
