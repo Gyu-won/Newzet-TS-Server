@@ -4,9 +4,15 @@ import { ArticleWithImageDao } from '../models/daos/articleWithImageDao.ts';
 import { Article } from '../models/entities/article.ts';
 
 export class ArticleRepository {
-  async getArticleList(userId: string): Promise<ArticleWithImageDao[]> {
-    const { data: articleList, error } = await supabase.rpc('get_article_with_image', {
+  async getArticleList(
+    userId: string,
+    year: number,
+    month: number,
+  ): Promise<ArticleWithImageDao[]> {
+    const { data: articleList, error } = await supabase.rpc('get_monthly_article_with_image', {
       uid: userId,
+      year: year,
+      month: month,
     });
     if (error) {
       throw new DatabaseAccessError('아티클 목록 조회 실패', error.message);

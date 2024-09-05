@@ -1,9 +1,9 @@
-import { ArticleResDto } from './articleResDto.ts';
+import { DailyArticleResDto } from './dailyArticleResDto.ts';
 
 export class ArticleListResDto {
-  articleList: ArticleResDto[];
+  dailyArticleList: DailyArticleResDto[];
 
-  constructor(ArticleList: ArticleResDto[]) {
-    this.articleList = ArticleList;
+  constructor(dailyArticleList: DailyArticleResDto[]) {
+    this.dailyArticleList = dailyArticleList;
   }
 }
