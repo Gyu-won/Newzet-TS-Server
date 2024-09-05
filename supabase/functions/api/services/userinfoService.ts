@@ -38,6 +38,9 @@ export class UserinfoService {
         throw new InvalidArgumentsError('이미 이메일이 등록된 유저입니다.');
       }
 
+      if (!/^[a-z0-9]{3,29}$/.test(userinfo.email)) {
+        throw new InvalidArgumentsError('올바르지 않은 이메일 형식입니다.');
+      }
       await this.userinfoRepository.updateEmail(userId, userinfo.email);
     }
 
