@@ -1,6 +1,7 @@
 import { InvalidArgumentsError } from '../lib/exceptions/invalidArgumentsError.ts';
 import { SupabaseError } from '../lib/exceptions/supabaseError.ts';
 import { supabase } from '../lib/supabase.ts';
+import { validateEmail } from '../lib/utils/regex.ts';
 import { CategoryResDto } from '../models/dtos/category/categoryResDto.ts';
 import { UniqueMailResDto } from '../models/dtos/userinfo/uniqueMailResDto.ts';
 import { UserinfoInitResDto } from '../models/dtos/userinfo/userinfoInitResDto.ts';
@@ -38,7 +39,7 @@ export class UserinfoService {
         throw new InvalidArgumentsError('이미 이메일이 등록된 유저입니다.');
       }
 
-      if (!/^[a-z0-9]{3,29}$/.test(userinfo.email)) {
+      if (!validateEmail(userinfo.email)) {
         throw new InvalidArgumentsError('올바르지 않은 이메일 형식입니다.');
       }
       await this.userinfoRepository.updateEmail(userId, userinfo.email);
