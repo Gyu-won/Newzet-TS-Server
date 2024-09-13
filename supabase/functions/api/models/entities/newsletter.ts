@@ -10,4 +10,5 @@ export interface Newsletter {
   priority: number | null;
   status: string | null;
   day_of_week: string | null;
+  deleted_at: string | null;
 }

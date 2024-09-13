@@ -19,7 +19,7 @@ export class NewsletterRepository {
     name: string | undefined,
     categoryId: string | undefined,
   ): Promise<Newsletter[]> {
-    let query = supabase.from('newsletter').select('*');
+    let query = supabase.from('newsletter').select('*').is('deletedAt', null);
 
     if (categoryId) {
       query = query.eq('category_id', categoryId);
