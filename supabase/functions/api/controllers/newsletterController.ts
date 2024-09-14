@@ -48,4 +48,17 @@ export class NewsletterController {
       return c.json(errorResponse);
     }
   }
+
+  async recommendNewsletterListV1(c: Context) {
+    try {
+      const userId = c.get('user').id;
+
+      const newsletterList = await this.newsletterService.recommendNewsletterList(userId);
+      return c.json(createResponse(ResponseCode.SUCCESS, '뉴스레터 추천 성공', newsletterList));
+    } catch (error) {
+      const errorResponse = createErrorResponse(error);
+      logError(c, error);
+      return c.json(errorResponse);
+    }
+  }
 }
