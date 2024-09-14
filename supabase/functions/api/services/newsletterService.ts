@@ -1,6 +1,7 @@
 import { NewsletterInfoResDto } from '../models/dtos/newsletter/newsletterInfoResDto.ts';
 import { NewsletterListResDto } from '../models/dtos/newsletter/newsletterListResDto.ts';
 import { NewsletterResDto } from '../models/dtos/newsletter/newsletterResDto.ts';
+import { Newsletter } from '../models/entities/newsletter.ts';
 import { CategoryRepository } from '../repositories/categoryRepository.ts';
 import { NewsletterRepository } from '../repositories/newsletterRepository.ts';
 import { SubscriptionRepository } from '../repositories/subscriptionRepository.ts';
@@ -39,5 +40,10 @@ export class NewsletterService {
     return new NewsletterListResDto(
       newsletterList.map((newsletter) => new NewsletterResDto(newsletter)),
     );
+  }
+
+  async getNewsletterByDomain(newsletterDomain: string): Promise<Newsletter | null> {
+    const newsletter = await this.newsletterRepository.getNewsletterByDomain(newsletterDomain);
+    return newsletter;
   }
 }
