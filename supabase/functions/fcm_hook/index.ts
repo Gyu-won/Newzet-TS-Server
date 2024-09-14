@@ -6,6 +6,7 @@ interface FcmNotificationRecord {
   id: string;
   user_id: string;
   article_id: string;
+  article_created_at: string;
   article_title: string;
   newsletter_name: string;
 }
@@ -135,6 +136,7 @@ const sendNotification = async (
             token: fcmToken,
             data: {
               articleId: record.article_id,
+              articleCreatedAt: record.article_created_at,
             },
             notification: {
               title: record.newsletter_name,

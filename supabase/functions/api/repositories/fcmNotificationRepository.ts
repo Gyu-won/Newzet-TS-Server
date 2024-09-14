@@ -7,6 +7,7 @@ export class FcmNotificationsRepository {
     articleId: string,
     articleTitle: string,
     newsletterName: string,
+    articleCreatedAt: string,
   ) {
     const { error: insertError } = await supabase.from('fcm_notifications').insert([
       {
@@ -14,6 +15,7 @@ export class FcmNotificationsRepository {
         article_id: articleId,
         article_title: articleTitle,
         newsletter_name: newsletterName,
+        article_created_at: articleCreatedAt,
       },
     ]);
 
