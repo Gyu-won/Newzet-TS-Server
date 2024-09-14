@@ -1,6 +1,7 @@
 import { InvalidArgumentsError } from '../api/lib/exceptions/invalidArgumentsError.ts';
 import { ArticleService } from '../api/services/articleService.ts';
 import { FcmNotificationService } from '../api/services/fcmNotificationService.ts';
+import { NewsletterService } from '../api/services/newsletterService.ts';
 import { SubscriptionService } from '../api/services/subscriptionService.ts';
 import { UserinfoService } from '../api/services/userinfoService.ts';
 import { getMailContent } from '../lib/s3Utils.ts';
@@ -9,6 +10,7 @@ import { uploadContent } from '../lib/storageUtils.ts';
 const userinfoService = new UserinfoService();
 const articleService = new ArticleService();
 const subscriptionService = new SubscriptionService();
+const newsletterService = new NewsletterService();
 const fcmNotificationService = new FcmNotificationService();
 
 Deno.serve(async (req: Request): Promise<Response> => {
@@ -20,15 +22,20 @@ Deno.serve(async (req: Request): Promise<Response> => {
     const contentUrl = await uploadContent(objectKey, mailContent.html);
 
     const userinfo = await userinfoService.getUserinfoByEmail(mailContent.to?.text);
+    const newsletter = await newsletterService.getNewsletterByDomain(fromDomain);
 
     const article = await articleService.addArticle(
       userinfo.id,
-      fromName,
+      newsletter?.name ?? fromName,
       fromDomain,
       mailContent.subject,
       contentUrl,
     );
-    await subscriptionService.addSubscription(userinfo.id, fromName, fromDomain);
+    await subscriptionService.addSubscription(
+      userinfo.id,
+      newsletter?.name ?? fromName,
+      fromDomain,
+    );
     await fcmNotificationService.addFcmNotification(userinfo.id, article);
 
     return new Response(JSON.stringify({ status: 'success' }), { status: 200 });
@@ -46,7 +53,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
 function parseFrom(from: string) {
   const match = from.match(/"?([^"]*)"?\s*<([^>]+)>/);
 
-  let fromName = '';
+  let fromName = from;
   let fromDomain = from;
 
   if (match) {

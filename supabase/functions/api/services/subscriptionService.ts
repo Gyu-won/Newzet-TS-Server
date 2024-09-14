@@ -26,12 +26,7 @@ export class SubscriptionService {
       newsletterDomain,
     );
     if (!isSubscribing) {
-      const newsletter = await this.newsletterRepository.getNewsletterByDomain(newsletterDomain);
-      await this.subscriptionRepository.addSubscription(
-        userId,
-        newsletter?.name ?? newsletterName,
-        newsletterDomain,
-      );
+      await this.subscriptionRepository.addSubscription(userId, newsletterName, newsletterDomain);
     }
   }
 }
