@@ -14,6 +14,7 @@ export class FcmNotificationService {
       article.id,
       article.title,
       article.from_name,
+      article.created_at,
     );
   }
 }
