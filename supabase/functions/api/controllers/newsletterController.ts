@@ -14,14 +14,16 @@ export class NewsletterController {
 
   async getNewsletterV1(c: Context) {
     try {
-      const userId = c.get('user').id;
-
       const newsletterId = c.req.param('newsletterId') ?? '';
       if (!newsletterId) {
         throw new InvalidArgumentsError(`뉴스레터 조회 시 ID가 필요합니다.`);
       }
 
-      const newsletter = await this.newsletterService.getNewsletterInfo(newsletterId, userId);
+      const userId = c.get('user').id;
+
+      const newsletter = userId
+        ? await this.newsletterService.getNewsletterWithSubscription(newsletterId, userId)
+        : await this.newsletterService.getNewsletter(newsletterId);
 
       return c.json(createResponse(ResponseCode.SUCCESS, '뉴스레터 조회 성공', newsletter));
     } catch (error) {
