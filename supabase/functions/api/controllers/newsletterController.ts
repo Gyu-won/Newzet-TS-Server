@@ -19,7 +19,7 @@ export class NewsletterController {
         throw new InvalidArgumentsError(`뉴스레터 조회 시 ID가 필요합니다.`);
       }
 
-      const userId = c.get('user').id;
+      const userId = c.get('user')?.id;
 
       const newsletter = userId
         ? await this.newsletterService.getNewsletterWithSubscription(newsletterId, userId)
