@@ -24,9 +24,10 @@ export class NewsletterService {
   async getNewsletterInfo(newsletterId: string, userId: string): Promise<NewsletterInfoResDto> {
     const newsletter = await this.newsletterRepository.getNewsletterById(newsletterId);
     const category = await this.categoryRepository.getCategoryById(newsletter.category_id);
-    const isSubscribing = await this.subscriptionRepository.getIsSubscribing(
+    const isSubscribing = await this.getIsSubscribing(
       userId,
       newsletter.domain,
+      newsletter.mailling_list,
     );
 
     return new NewsletterInfoResDto(newsletter, isSubscribing, category.name);
@@ -71,6 +72,16 @@ export class NewsletterService {
     const recommendedNewsletterList = this.getRandomNewsletterList(newsletterList, 4);
     return new NewsletterRecommendResDto(
       recommendedNewsletterList.map((newsletter) => new NewsletterResDto(newsletter)),
+    );
+  }
+
+  async getIsSubscribing(userId: string, newsletterDomain: string, newsletterMaillingList: string) {
+    if (newsletterMaillingList == null) {
+      return await this.subscriptionRepository.getIsSubscribingByDomain(userId, newsletterDomain);
+    }
+    return await this.subscriptionRepository.getIsSubscribingByMaillingList(
+      userId,
+      newsletterMaillingList,
     );
   }
 
