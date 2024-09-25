@@ -18,7 +18,9 @@ Deno.serve(async (req: Request): Promise<Response> => {
     const { objectKey } = await req.json();
     const mailContent = await getMailContent(objectKey);
 
-    const { fromName, fromDomain } = parseFrom(mailContent.from?.text);
+    const fromName = mailContent.from?.value[0].name;
+    const fromDomain = mailContent.from?.value[0].address;
+
     const contentUrl = await uploadContent(objectKey, mailContent.html);
 
     const userinfo = await userinfoService.getUserinfoByEmail(mailContent.to?.text);
@@ -49,29 +51,3 @@ Deno.serve(async (req: Request): Promise<Response> => {
     });
   }
 });
-
-function parseFrom(from: string) {
-  const match = from.match(/"?([^"]*)"?\s*<([^>]+)>/);
-
-  let fromName = from;
-  let fromDomain = from;
-
-  if (match) {
-    fromName = match[1]?.trim() || '';
-    fromDomain = match[2]?.trim() || '';
-
-    if (/^=\?/.test(fromName)) {
-      fromName = decodeRFC2047(fromName);
-    }
-  }
-  return { fromName, fromDomain };
-}
-
-function decodeRFC2047(encodedStr: string) {
-  const base64Pattern = /=\?UTF-8\?B\?(.+)\?=/i;
-  const match = encodedStr.match(base64Pattern);
-  if (match) {
-    return Buffer.from(match[1], 'base64').toString('utf-8');
-  }
-  return encodedStr;
-}
