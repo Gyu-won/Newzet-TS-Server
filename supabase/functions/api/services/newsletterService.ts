@@ -47,11 +47,6 @@ export class NewsletterService {
     );
   }
 
-  async getNewsletterByDomain(newsletterDomain: string): Promise<Newsletter | null> {
-    const newsletter = await this.newsletterRepository.getNewsletterByDomain(newsletterDomain);
-    return newsletter;
-  }
-
   async getNewsletterByMaillingListOrDomain(
     newsletterMaillingList: string,
     newsletterDomain: string,
