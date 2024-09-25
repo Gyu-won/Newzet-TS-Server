@@ -31,8 +31,9 @@ export class SubscriptionService {
       newsletterDomain,
       newsletterMaillingList,
     );
+    const isUnique = await this.isUniqueNewsletter(newsletterDomain, newsletterMaillingList);
 
-    if (!isSubscribing && !this.isUniqueNewsletter(newsletterDomain, newsletterMaillingList)) {
+    if (!isSubscribing && !isUnique) {
       await this.subscriptionRepository.addSubscription(
         userId,
         newsletterName,
