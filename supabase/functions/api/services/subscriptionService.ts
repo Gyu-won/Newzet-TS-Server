@@ -31,7 +31,8 @@ export class SubscriptionService {
       newsletterDomain,
       newsletterMaillingList,
     );
-    if (!isSubscribing) {
+
+    if (!isSubscribing && !this.isUniqueNewsletter(newsletterDomain, newsletterMaillingList)) {
       await this.subscriptionRepository.addSubscription(
         userId,
         newsletterName,
@@ -42,9 +43,6 @@ export class SubscriptionService {
   }
 
   async getIsSubscribing(userId: string, newsletterDomain: string, newsletterMaillingList: string) {
-    if (newsletterMaillingList == '85444.list-id.stibee.com') {
-      return true;
-    }
     if (newsletterMaillingList == null) {
       return await this.subscriptionRepository.getIsSubscribingByDomain(userId, newsletterDomain);
     }
@@ -52,5 +50,10 @@ export class SubscriptionService {
       userId,
       newsletterMaillingList,
     );
+  }
+
+  async isUniqueNewsletter(newsletterDomain: string, newsletterMaillingList: string) {
+    const newsletter = await this.newsletterRepository.getNewsletterByDomain(newsletterDomain);
+    return newsletterMaillingList == '85444.list-id.stibee.com' && newsletter == null;
   }
 }
