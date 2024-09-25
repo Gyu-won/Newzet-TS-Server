@@ -57,7 +57,7 @@ export class SubscriptionRepository {
         user_id: userId,
         newsletter_name: newsletterName,
         newsletter_domain: newsletterDomain,
-        mailling_list: newsletterMaillingList,
+        newsletter_mailling_list: newsletterMaillingList,
       },
     ]);
 

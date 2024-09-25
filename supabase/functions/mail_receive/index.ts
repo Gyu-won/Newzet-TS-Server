@@ -36,13 +36,13 @@ Deno.serve(async (req: Request): Promise<Response> => {
       fromDomain,
       mailContent.subject,
       contentUrl,
-      maillingList,
+      newsletter?.mailling_list ?? maillingList,
     );
     await subscriptionService.addSubscription(
       userinfo.id,
       newsletter?.name ?? fromName,
       fromDomain,
-      maillingList,
+      newsletter?.mailling_list ?? maillingList,
     );
     await fcmNotificationService.addFcmNotification(userinfo.id, article);
 
