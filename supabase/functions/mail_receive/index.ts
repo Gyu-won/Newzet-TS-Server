@@ -36,6 +36,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
       fromDomain,
       mailContent.subject,
       contentUrl,
+      maillingList,
     );
     await subscriptionService.addSubscription(
       userinfo.id,

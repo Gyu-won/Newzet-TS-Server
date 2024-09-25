@@ -8,4 +8,5 @@ export interface Article {
   is_read: boolean;
   created_at: string;
   deleted_at: string | null;
+  mailling_list: string | null;
 }
