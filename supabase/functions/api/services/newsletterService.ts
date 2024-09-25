@@ -51,6 +51,16 @@ export class NewsletterService {
     return newsletter;
   }
 
+  async getNewsletterByMaillingListOrDomain(
+    newsletterMaillingList: string,
+    newsletterDomain: string,
+  ): Promise<Newsletter | null> {
+    if (newsletterMaillingList == null) {
+      return await this.newsletterRepository.getNewsletterByDomain(newsletterDomain);
+    }
+    return await this.newsletterRepository.getNewsletterByMaillingList(newsletterMaillingList);
+  }
+
   async recommendNewsletterList(userId: string): Promise<NewsletterRecommendResDto> {
     const userCategoryList = await this.userCategoryRepository.getUserCategoryListByUserId(userId);
     const userCategoryIdList = userCategoryList.map((category) => category.id);

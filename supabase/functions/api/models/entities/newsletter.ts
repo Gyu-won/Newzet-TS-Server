@@ -4,6 +4,7 @@ export interface Newsletter {
   name: string;
   description: string;
   domain: string;
+  mailling_list: string;
   subscription_url: string;
   image_url: string;
   detail: string | null;

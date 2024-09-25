@@ -20,11 +20,15 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
     const fromName = mailContent.from?.value[0].name;
     const fromDomain = mailContent.from?.value[0].address;
+    const maillingList = mailContent.headers.get('list')?.id?.name ?? null;
 
     const contentUrl = await uploadContent(objectKey, mailContent.html);
 
     const userinfo = await userinfoService.getUserinfoByEmail(mailContent.to?.text);
-    const newsletter = await newsletterService.getNewsletterByDomain(fromDomain);
+    const newsletter = await newsletterService.getNewsletterByMaillingListOrDomain(
+      maillingList,
+      fromDomain,
+    );
 
     const article = await articleService.addArticle(
       userinfo.id,
