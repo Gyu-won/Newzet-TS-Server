@@ -42,6 +42,9 @@ export class SubscriptionService {
   }
 
   async getIsSubscribing(userId: string, newsletterDomain: string, newsletterMaillingList: string) {
+    if (newsletterMaillingList == '85444.list-id.stibee.com') {
+      return true;
+    }
     if (newsletterMaillingList == null) {
       return await this.subscriptionRepository.getIsSubscribingByDomain(userId, newsletterDomain);
     }
