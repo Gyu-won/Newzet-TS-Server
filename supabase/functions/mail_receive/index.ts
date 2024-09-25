@@ -42,6 +42,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
       userinfo.id,
       newsletter?.name ?? fromName,
       fromDomain,
+      maillingList,
     );
     await fcmNotificationService.addFcmNotification(userinfo.id, article);
 

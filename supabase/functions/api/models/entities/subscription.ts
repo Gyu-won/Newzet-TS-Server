@@ -5,4 +5,5 @@ export interface Subscription {
   newsletter_domain: string;
   created_at: string;
   deleted_at: string | null;
+  newsletter_mailling_list: string | null;
 }
