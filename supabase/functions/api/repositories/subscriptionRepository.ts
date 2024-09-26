@@ -3,29 +3,18 @@ import { supabase } from '../lib/supabase.ts';
 import { SubscriptionWithImageDao } from '../models/daos/subscriptionWithImageDao.ts';
 
 export class SubscriptionRepository {
-  async getIsSubscribingByDomain(userId: string, newsletterDomain: string): Promise<boolean> {
-    const { data: subscribing, error } = await supabase
-      .from('subscription')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('newsletter_domain', newsletterDomain);
-
-    if (error) {
-      throw new DatabaseAccessError('구독 여부 조회 실패', error.message);
-    }
-
-    return subscribing.length > 0;
-  }
-
-  async getIsSubscribingByMaillingList(
+  async getIsSubscribing(
     userId: string,
+    newsletterDomain: string,
     newsletterMaillingList: string,
   ): Promise<boolean> {
     const { data: subscribing, error } = await supabase
       .from('subscription')
       .select('*')
       .eq('user_id', userId)
-      .eq('newsletter_mailling_list', newsletterMaillingList);
+      .or(
+        `newsletter_mailling_list.eq.${newsletterMaillingList}, newsletter_domain.eq.${newsletterDomain}`,
+      );
 
     if (error) {
       throw new DatabaseAccessError('구독 여부 조회 실패', error.message);

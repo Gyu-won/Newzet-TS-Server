@@ -26,7 +26,7 @@ export class SubscriptionService {
     newsletterDomain: string,
     newsletterMaillingList: string,
   ) {
-    const isSubscribing = await this.getIsSubscribing(
+    const isSubscribing = await this.subscriptionRepository.getIsSubscribing(
       userId,
       newsletterDomain,
       newsletterMaillingList,
@@ -40,15 +40,5 @@ export class SubscriptionService {
         newsletterMaillingList,
       );
     }
-  }
-
-  async getIsSubscribing(userId: string, newsletterDomain: string, newsletterMaillingList: string) {
-    if (newsletterMaillingList == null) {
-      return await this.subscriptionRepository.getIsSubscribingByDomain(userId, newsletterDomain);
-    }
-    return await this.subscriptionRepository.getIsSubscribingByMaillingList(
-      userId,
-      newsletterMaillingList,
-    );
   }
 }
