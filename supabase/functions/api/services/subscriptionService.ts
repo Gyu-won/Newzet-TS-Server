@@ -20,13 +20,25 @@ export class SubscriptionService {
     );
   }
 
-  async addSubscription(userId: string, newsletterName: string, newsletterDomain: string) {
+  async addSubscription(
+    userId: string,
+    newsletterName: string,
+    newsletterDomain: string,
+    newsletterMaillingList: string,
+  ) {
     const isSubscribing = await this.subscriptionRepository.getIsSubscribing(
       userId,
       newsletterDomain,
+      newsletterMaillingList,
     );
-    if (!isSubscribing) {
-      await this.subscriptionRepository.addSubscription(userId, newsletterName, newsletterDomain);
+
+    if (!isSubscribing && newsletterMaillingList != '85444.list-id.stibee.com') {
+      await this.subscriptionRepository.addSubscription(
+        userId,
+        newsletterName,
+        newsletterDomain,
+        newsletterMaillingList,
+      );
     }
   }
 }

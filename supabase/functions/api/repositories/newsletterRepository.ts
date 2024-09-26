@@ -47,6 +47,18 @@ export class NewsletterRepository {
     return newsletter;
   }
 
+  async getNewsletterByMaillingList(maillingList: string): Promise<Newsletter | null> {
+    const { data: newsletter, error } = await supabase
+      .from('newsletter')
+      .select('*')
+      .eq('mailling_list', maillingList)
+      .maybeSingle();
+    if (error) {
+      throw new DatabaseAccessError('뉴스레터 조회 실패', error.message);
+    }
+    return newsletter;
+  }
+
   async getNewsletterListByCategoryIdList(categoryIdList: string[]): Promise<Newsletter[]> {
     const { data: newsletterList, error } = await supabase
       .from('newsletter')

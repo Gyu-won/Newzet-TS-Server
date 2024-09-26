@@ -31,8 +31,16 @@ export class ArticleService {
     fromDomain: string,
     title: string,
     contentUrl: string,
+    maillingList: string,
   ): Promise<Article> {
-    return await this.articleRepository.addArticle(userId, fromName, fromDomain, title, contentUrl);
+    return await this.articleRepository.addArticle(
+      userId,
+      fromName,
+      fromDomain,
+      title,
+      contentUrl,
+      maillingList,
+    );
   }
 
   async getArticleAndRead(articleId: string): Promise<ArticleContentResDto> {

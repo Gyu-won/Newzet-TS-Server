@@ -37,6 +37,7 @@ export class NewsletterService {
     const isSubscribing = await this.subscriptionRepository.getIsSubscribing(
       userId,
       newsletter.domain,
+      newsletter.mailling_list,
     );
 
     return new NewsletterInfoResDto(newsletter, isSubscribing, category.name);
@@ -56,9 +57,14 @@ export class NewsletterService {
     );
   }
 
-  async getNewsletterByDomain(newsletterDomain: string): Promise<Newsletter | null> {
-    const newsletter = await this.newsletterRepository.getNewsletterByDomain(newsletterDomain);
-    return newsletter;
+  async getNewsletterByMaillingListOrDomain(
+    newsletterMaillingList: string,
+    newsletterDomain: string,
+  ): Promise<Newsletter | null> {
+    if (newsletterMaillingList == null) {
+      return await this.newsletterRepository.getNewsletterByDomain(newsletterDomain);
+    }
+    return await this.newsletterRepository.getNewsletterByMaillingList(newsletterMaillingList);
   }
 
   async recommendNewsletterList(userId: string): Promise<NewsletterRecommendResDto> {

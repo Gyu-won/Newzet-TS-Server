@@ -3,18 +3,24 @@ import { supabase } from '../lib/supabase.ts';
 import { SubscriptionWithImageDao } from '../models/daos/subscriptionWithImageDao.ts';
 
 export class SubscriptionRepository {
-  async getIsSubscribing(userId: string, newsletterDomain: string): Promise<boolean> {
-    const { data: category, error } = await supabase
+  async getIsSubscribing(
+    userId: string,
+    newsletterDomain: string,
+    newsletterMaillingList: string,
+  ): Promise<boolean> {
+    const { data: subscribing, error } = await supabase
       .from('subscription')
       .select('*')
       .eq('user_id', userId)
-      .eq('newsletter_domain', newsletterDomain);
+      .or(
+        `newsletter_mailling_list.eq.${newsletterMaillingList}, newsletter_domain.eq.${newsletterDomain}`,
+      );
 
     if (error) {
       throw new DatabaseAccessError('구독 여부 조회 실패', error.message);
     }
 
-    return category.length > 0;
+    return subscribing.length > 0;
   }
 
   async getSubscriptionListWithImage(userId: string): Promise<SubscriptionWithImageDao[]> {
@@ -29,12 +35,18 @@ export class SubscriptionRepository {
     return subscriptionList;
   }
 
-  async addSubscription(userId: string, newsletterName: string, newsletterDomain: string) {
+  async addSubscription(
+    userId: string,
+    newsletterName: string,
+    newsletterDomain: string,
+    newsletterMaillingList: string,
+  ) {
     const { error: insertError } = await supabase.from('subscription').insert([
       {
         user_id: userId,
         newsletter_name: newsletterName,
         newsletter_domain: newsletterDomain,
+        newsletter_mailling_list: newsletterMaillingList,
       },
     ]);
 
