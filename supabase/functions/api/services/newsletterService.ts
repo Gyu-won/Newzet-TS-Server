@@ -21,7 +21,17 @@ export class NewsletterService {
     this.userCategoryRepository = new UserCategoryRepository();
   }
 
-  async getNewsletterInfo(newsletterId: string, userId: string): Promise<NewsletterInfoResDto> {
+  async getNewsletter(newsletterId: string): Promise<NewsletterInfoResDto> {
+    const newsletter = await this.newsletterRepository.getNewsletterById(newsletterId);
+    const category = await this.categoryRepository.getCategoryById(newsletter.category_id);
+
+    return new NewsletterInfoResDto(newsletter, false, category.name);
+  }
+
+  async getNewsletterWithSubscription(
+    newsletterId: string,
+    userId: string,
+  ): Promise<NewsletterInfoResDto> {
     const newsletter = await this.newsletterRepository.getNewsletterById(newsletterId);
     const category = await this.categoryRepository.getCategoryById(newsletter.category_id);
     const isSubscribing = await this.subscriptionRepository.getIsSubscribing(
@@ -55,8 +65,9 @@ export class NewsletterService {
     const userCategoryList = await this.userCategoryRepository.getUserCategoryListByUserId(userId);
     const userCategoryIdList = userCategoryList.map((category) => category.id);
 
-    const newsletterList =
-      await this.newsletterRepository.getNewsletterListByCategoryIdList(userCategoryIdList);
+    const newsletterList = await this.newsletterRepository.getNewsletterListByCategoryIdList(
+      userCategoryIdList,
+    );
 
     const recommendedNewsletterList = this.getRandomNewsletterList(newsletterList, 4);
     return new NewsletterRecommendResDto(
