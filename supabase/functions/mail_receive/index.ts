@@ -24,27 +24,31 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
     const contentUrl = await uploadContent(objectKey, mailContent.html);
 
-    const userinfo = await userinfoService.getUserinfoByEmail(mailContent.to?.text);
     const newsletter = await newsletterService.getNewsletterByMaillingListOrDomain(
       maillingList,
       fromDomain,
     );
 
-    const article = await articleService.addArticle(
-      userinfo.id,
-      newsletter?.name ?? fromName,
-      fromDomain,
-      mailContent.subject,
-      contentUrl,
-      newsletter?.mailling_list ?? maillingList,
-    );
-    await subscriptionService.addSubscription(
-      userinfo.id,
-      newsletter?.name ?? fromName,
-      fromDomain,
-      newsletter?.mailling_list ?? maillingList,
-    );
-    await fcmNotificationService.addFcmNotification(userinfo.id, article);
+    const toMailList = mailContent.to?.text.split(', ');
+    for (const toMail of toMailList) {
+      const userinfo = await userinfoService.getUserinfoByEmail(toMail);
+      const article = await articleService.addArticle(
+        userinfo.id,
+        newsletter?.name ?? fromName,
+        fromDomain,
+        mailContent.subject,
+        contentUrl,
+        newsletter?.mailling_list ?? maillingList,
+      );
+
+      await subscriptionService.addSubscription(
+        userinfo.id,
+        newsletter?.name ?? fromName,
+        fromDomain,
+        newsletter?.mailling_list ?? maillingList,
+      );
+      await fcmNotificationService.addFcmNotification(userinfo.id, article);
+    }
 
     return new Response(JSON.stringify({ status: 'success' }), { status: 200 });
   } catch (error) {
