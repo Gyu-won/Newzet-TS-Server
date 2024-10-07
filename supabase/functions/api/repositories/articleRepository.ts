@@ -69,7 +69,6 @@ export class ArticleRepository {
       .from('article')
       .select('*')
       .eq('id', articleId)
-      .eq('is_share', true)
       .single();
 
     if (error) {
