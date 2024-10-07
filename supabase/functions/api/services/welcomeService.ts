@@ -29,7 +29,7 @@ export class WelcomeService {
       newsletter.name,
       newsletter.domain,
       '💌 뉴젯과 더욱 친해지는 방법 💌',
-      '7oskhlv05baub38dmatd0njp8qjgjibk0bo6uk81.html',
+      'welcome_mail.html',
       newsletter.mailling_list,
     );
     await this.subscriptionRepository.addSubscription(
