@@ -6,6 +6,7 @@ import { ArticleService } from '../services/articleService.ts';
 import { ArticleListResDto } from '../models/dtos/article/articleListResDto.ts';
 import { createErrorResponse, logError } from '../lib/exceptions/errorHandler.ts';
 import { InvalidArgumentsError } from '../lib/exceptions/invalidArgumentsError.ts';
+import { ArticleShareResDto } from '../models/dtos/article/articleShareResDto.ts';
 
 export class ArticleController {
   private articleService: ArticleService;
@@ -40,6 +41,18 @@ export class ArticleController {
       const articleId = c.req.param('articleId') ?? '';
       const article = await this.articleService.getArticleAndRead(articleId);
       return c.json(createResponse(ResponseCode.SUCCESS, '아티클 조회 성공', article));
+    } catch (error) {
+      const errorResponse = createErrorResponse(error);
+      logError(c, error);
+      return c.json(errorResponse);
+    }
+  }
+
+  async shareArticleV1(c: Context) {
+    try {
+      const articleId = c.req.param('articleId') ?? '';
+      const sharedArticle: ArticleShareResDto = await this.articleService.shareArticle(articleId);
+      return c.json(createResponse(ResponseCode.SUCCESS, '아티클 공유 성공', sharedArticle));
     } catch (error) {
       const errorResponse = createErrorResponse(error);
       logError(c, error);
