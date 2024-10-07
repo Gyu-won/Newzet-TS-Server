@@ -9,4 +9,5 @@ export interface Article {
   created_at: string;
   deleted_at: string | null;
   mailling_list: string | null;
+  is_share: boolean;
 }
