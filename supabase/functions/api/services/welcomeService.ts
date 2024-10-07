@@ -5,6 +5,10 @@ import { SubscriptionRepository } from '../repositories/subscriptionRepository.t
 import { UserinfoRepository } from '../repositories/userinfoRepository.ts';
 
 export class WelcomeService {
+  private readonly newzetNewsletterId = 'c4922e54-f58a-4270-80da-2dc6d59bc4fa';
+  private readonly welcomeMailTitle = '💌 뉴젯과 더욱 친해지는 방법 💌';
+  private readonly welcomeMailUrl = 'welcome_mail.html';
+
   private userinfoRepository: UserinfoRepository;
   private newsletterRepository: NewsletterRepository;
   private articleRepository: ArticleRepository;
@@ -21,15 +25,13 @@ export class WelcomeService {
 
   async sendWelcomeMail(userId: string) {
     const userinfo = await this.userinfoRepository.getUserinfo(userId);
-    const newsletter = await this.newsletterRepository.getNewsletterById(
-      'c4922e54-f58a-4270-80da-2dc6d59bc4fa',
-    );
+    const newsletter = await this.newsletterRepository.getNewsletterById(this.newzetNewsletterId);
     const article = await this.articleRepository.addArticle(
       userinfo.id,
       newsletter.name,
       newsletter.domain,
-      '💌 뉴젯과 더욱 친해지는 방법 💌',
-      'welcome_mail.html',
+      this.welcomeMailTitle,
+      this.welcomeMailUrl,
       newsletter.mailling_list,
     );
     await this.subscriptionRepository.addSubscription(
