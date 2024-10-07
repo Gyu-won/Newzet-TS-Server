@@ -21,6 +21,9 @@ export function createErrorResponse(error: Error) {
     case 'StorageAccessError':
       responseCode = ResponseCode.STORAGE_ACCESS_ERROR;
       break;
+    case 'ForbiddenError':
+      responseCode = ResponseCode.FORBIDDEN;
+      break;
     default:
       responseCode = ResponseCode.SERVER_ERROR;
       break;

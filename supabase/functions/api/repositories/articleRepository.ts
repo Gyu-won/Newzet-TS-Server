@@ -64,6 +64,19 @@ export class ArticleRepository {
     return article;
   }
 
+  async getSharedArticle(articleId: string): Promise<Article> {
+    const { data: article, error } = await supabase
+      .from('article')
+      .select('*')
+      .eq('id', articleId)
+      .single();
+
+    if (error) {
+      throw new DatabaseAccessError('아티클 조회 실패', error.message);
+    }
+    return article;
+  }
+
   async shareArticle(articleId: string): Promise<Article> {
     const { data: article, error } = await supabase
       .from('article')

@@ -6,6 +6,7 @@ import { ArticleContentResDto } from '../models/dtos/article/articleContentResDt
 import { getContent } from '../../lib/storageUtils.ts';
 import { Article } from '../models/entities/article.ts';
 import { DailyArticleResDto } from '../models/dtos/article/dailyArticleResDto.ts';
+import { ForbiddenError } from '../lib/exceptions/forbiddenError.ts';
 import { ArticleShareResDto } from '../models/dtos/article/articleShareResDto.ts';
 
 export class ArticleService {
@@ -46,6 +47,15 @@ export class ArticleService {
 
   async getArticleAndRead(articleId: string): Promise<ArticleContentResDto> {
     const article = await this.articleRepository.getArticleAndRead(articleId);
+    const content = await getContent(article.content_url);
+    return new ArticleContentResDto(article.title, content);
+  }
+
+  async getSharedArticle(articleId: string): Promise<ArticleContentResDto> {
+    const article = await this.articleRepository.getSharedArticle(articleId);
+    if (!article.is_share) {
+      throw new ForbiddenError('공유가 허용되지 않음');
+    }
     const content = await getContent(article.content_url);
     return new ArticleContentResDto(article.title, content);
   }
