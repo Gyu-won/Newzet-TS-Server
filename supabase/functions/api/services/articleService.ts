@@ -7,6 +7,7 @@ import { getContent } from '../../lib/storageUtils.ts';
 import { Article } from '../models/entities/article.ts';
 import { DailyArticleResDto } from '../models/dtos/article/dailyArticleResDto.ts';
 import { ForbiddenError } from '../lib/exceptions/forbiddenError.ts';
+import { ArticleShareResDto } from '../models/dtos/article/articleShareResDto.ts';
 
 export class ArticleService {
   private articleRepository: ArticleRepository;
@@ -57,6 +58,12 @@ export class ArticleService {
     }
     const content = await getContent(article.content_url);
     return new ArticleContentResDto(article.title, content);
+  }
+
+  async shareArticle(articleId: string): Promise<ArticleShareResDto> {
+    const article = await this.articleRepository.shareArticle(articleId);
+    const shareUrl = `https://newzet.me/${article.id}`;
+    return new ArticleShareResDto(shareUrl);
   }
 
   private groupArticleByDay(articleList: ArticleWithImageDao[]) {

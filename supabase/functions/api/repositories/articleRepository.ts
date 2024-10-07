@@ -76,4 +76,18 @@ export class ArticleRepository {
     }
     return article;
   }
+
+  async shareArticle(articleId: string): Promise<Article> {
+    const { data: article, error } = await supabase
+      .from('article')
+      .update({ is_share: true })
+      .eq('id', articleId)
+      .select('*')
+      .single();
+
+    if (error) {
+      throw new DatabaseAccessError('아티클 조회 실패', error.message);
+    }
+    return article;
+  }
 }
