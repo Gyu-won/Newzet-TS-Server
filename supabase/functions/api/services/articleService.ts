@@ -49,6 +49,12 @@ export class ArticleService {
     return new ArticleContentResDto(article.title, content);
   }
 
+  async getSharedArticle(articleId: string): Promise<ArticleContentResDto> {
+    const article = await this.articleRepository.getSharedArticle(articleId);
+    const content = await getContent(article.content_url);
+    return new ArticleContentResDto(article.title, content);
+  }
+
   private groupArticleByDay(articleList: ArticleWithImageDao[]) {
     const groupedArticleByDay: { [key: number]: ArticleResDto[] } = {};
 
