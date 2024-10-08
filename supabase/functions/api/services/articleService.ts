@@ -10,7 +10,7 @@ import { ForbiddenError } from '../lib/exceptions/forbiddenError.ts';
 import { ArticleShareResDto } from '../models/dtos/article/articleShareResDto.ts';
 
 export class ArticleService {
-  private readonly webLink = 'https://app.newzet.me';
+  private readonly webArticleShareLink = 'https://app.newzet.me/article';
 
   private articleRepository: ArticleRepository;
 
