@@ -8,6 +8,7 @@ import {
   subscriptionRouter,
   userinfoRouter,
 } from './routers/index.ts';
+import welcomeRouter from './routers/welcomeRouter.ts';
 
 const app = new Hono();
 
@@ -18,5 +19,6 @@ app.basePath('/api').route('/fcm_token', fcmTokenRouter);
 app.basePath('/api').route('/my', userinfoRouter);
 app.basePath('/api').route('/subscription', subscriptionRouter);
 app.basePath('/api').route('/newsletter', newsletterRouter);
+app.basePath('/api').route('/welcome', welcomeRouter);
 
 Deno.serve(app.fetch);
