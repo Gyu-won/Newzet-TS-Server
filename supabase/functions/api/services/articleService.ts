@@ -64,7 +64,7 @@ export class ArticleService {
 
   async shareArticle(articleId: string): Promise<ArticleShareResDto> {
     const article = await this.articleRepository.shareArticle(articleId);
-    const shareUrl = `${this.webLink}/${article.id}`;
+    const shareUrl = `${this.webArticleShareLink}/${article.id}`;
     return new ArticleShareResDto(shareUrl);
   }
 
