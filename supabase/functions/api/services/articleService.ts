@@ -10,6 +10,8 @@ import { ForbiddenError } from '../lib/exceptions/forbiddenError.ts';
 import { ArticleShareResDto } from '../models/dtos/article/articleShareResDto.ts';
 
 export class ArticleService {
+  private readonly webLink = 'https://app.newzet.me';
+
   private articleRepository: ArticleRepository;
 
   constructor() {
@@ -62,7 +64,7 @@ export class ArticleService {
 
   async shareArticle(articleId: string): Promise<ArticleShareResDto> {
     const article = await this.articleRepository.shareArticle(articleId);
-    const shareUrl = `https://newzet.me/${article.id}`;
+    const shareUrl = `${this.webLink}/${article.id}`;
     return new ArticleShareResDto(shareUrl);
   }
 
