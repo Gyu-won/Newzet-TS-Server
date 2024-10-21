@@ -9,7 +9,8 @@ export class EventRepository {
       .from('event_banner')
       .select('*')
       .gt('post_end', currentTime)
-      .lt('post_start', currentTime);
+      .lt('post_start', currentTime)
+      .order('priority');
 
     if (error) {
       throw new DatabaseAccessError('이벤트 배너 목록 조회 실패', error.message);
