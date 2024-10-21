@@ -4,4 +4,5 @@ export interface EventBanner {
   image_url: string;
   post_start: string;
   post_end: string;
+  priority: number;
 }
