@@ -7,6 +7,7 @@ import { ArticleListResDto } from '../models/dtos/article/articleListResDto.ts';
 import { createErrorResponse, logError } from '../lib/exceptions/errorHandler.ts';
 import { InvalidArgumentsError } from '../lib/exceptions/invalidArgumentsError.ts';
 import { ArticleShareResDto } from '../models/dtos/article/articleShareResDto.ts';
+import { ArticleLikeListResDto } from '../models/dtos/article/articleLikeListResDto.ts';
 
 export class ArticleController {
   private articleService: ArticleService;
@@ -52,7 +53,7 @@ export class ArticleController {
     try {
       const articleId = c.req.param('articleId') ?? '';
       const article = await this.articleService.getSharedArticle(articleId);
-      return c.json(createResponse(ResponseCode.SUCCESS, '아티클 조회 성공', article));
+      return c.json(createResponse(ResponseCode.SUCCESS, '공유 아티클 조회 성공', article));
     } catch (error) {
       const errorResponse = createErrorResponse(error);
       logError(c, error);
@@ -65,6 +66,20 @@ export class ArticleController {
       const articleId = c.req.param('articleId') ?? '';
       const sharedArticle: ArticleShareResDto = await this.articleService.shareArticle(articleId);
       return c.json(createResponse(ResponseCode.SUCCESS, '아티클 공유 성공', sharedArticle));
+    } catch (error) {
+      const errorResponse = createErrorResponse(error);
+      logError(c, error);
+      return c.json(errorResponse);
+    }
+  }
+
+  async getLikeArticleListV1(c: Context) {
+    try {
+      const userId = c.get('user').id;
+      const articleLikeList = await this.articleService.getLikeArticleList(userId);
+      return c.json(
+        createResponse(ResponseCode.SUCCESS, '좋아요 아티클 조회 성공', articleLikeList),
+      );
     } catch (error) {
       const errorResponse = createErrorResponse(error);
       logError(c, error);
