@@ -24,9 +24,12 @@ export class SubscriptionRepository {
   }
 
   async getSubscriptionListWithImage(userId: string): Promise<SubscriptionWithImageDao[]> {
-    const { data: subscriptionList, error } = await supabase.rpc('get_subscription_with_image', {
-      uid: userId,
-    });
+    const { data: subscriptionList, error } = await supabase.rpc(
+      'get_subscription_list_with_image',
+      {
+        uid: userId,
+      },
+    );
 
     if (error) {
       throw new DatabaseAccessError(`구독 목록 조회 실패: ${error.message}`);
