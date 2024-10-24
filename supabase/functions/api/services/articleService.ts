@@ -77,6 +77,11 @@ export class ArticleService {
     return new ArticleLikeListResDto(mappedArticleLikeList);
   }
 
+  async updateLikeArticle(articleId: string, isLike: string) {
+    const likeValue = isLike === 'true';
+    await this.articleRepository.updateLikeArticle(articleId, likeValue);
+  }
+
   private groupArticleByDay(articleList: ArticleWithImageDao[]) {
     const groupedArticleByDay: { [key: number]: ArticleResDto[] } = {};
 
