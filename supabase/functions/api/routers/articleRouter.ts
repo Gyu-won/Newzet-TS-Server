@@ -6,6 +6,7 @@ const articleRouter = new Hono();
 const articleController = new ArticleController();
 
 articleRouter.get('', authMiddleware, (c) => articleController.getArticleListV1(c));
+articleRouter.get('/like', authMiddleware, (c) => articleController.getLikeArticleListV1(c));
 articleRouter.get('/:articleId', authMiddleware, (c) => articleController.getArticleV1(c));
 articleRouter.get('/share/:articleId', (c) => articleController.getSharedArticleV1(c));
 articleRouter.patch('/share/:articleId', authMiddleware, (c) =>

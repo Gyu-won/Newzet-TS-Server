@@ -8,6 +8,7 @@ import { Article } from '../models/entities/article.ts';
 import { DailyArticleResDto } from '../models/dtos/article/dailyArticleResDto.ts';
 import { ForbiddenError } from '../lib/exceptions/forbiddenError.ts';
 import { ArticleShareResDto } from '../models/dtos/article/articleShareResDto.ts';
+import { ArticleLikeListResDto } from '../models/dtos/article/articleLikeListResDto.ts';
 
 export class ArticleService {
   private readonly webArticleShareLink = 'https://app.newzet.me/article';
@@ -50,7 +51,7 @@ export class ArticleService {
   async getArticleAndRead(articleId: string): Promise<ArticleContentResDto> {
     const article = await this.articleRepository.getArticleAndRead(articleId);
     const content = await getContent(article.content_url);
-    return new ArticleContentResDto(article.title, content);
+    return new ArticleContentResDto(article.title, content, article.is_like);
   }
 
   async getSharedArticle(articleId: string): Promise<ArticleContentResDto> {
@@ -59,13 +60,21 @@ export class ArticleService {
       throw new ForbiddenError('공유가 허용되지 않음');
     }
     const content = await getContent(article.content_url);
-    return new ArticleContentResDto(article.title, content);
+    return new ArticleContentResDto(article.title, content, article.is_like);
   }
 
   async shareArticle(articleId: string): Promise<ArticleShareResDto> {
     const article = await this.articleRepository.shareArticle(articleId);
     const shareUrl = `${this.webArticleShareLink}/${article.id}`;
     return new ArticleShareResDto(shareUrl);
+  }
+
+  async getLikeArticleList(userId: string): Promise<ArticleLikeListResDto> {
+    const articleLikeList = await this.articleRepository.getLikeArticleList(userId);
+    const mappedArticleLikeList = articleLikeList.map(
+      (article: ArticleWithImageDao) => new ArticleResDto(article),
+    );
+    return new ArticleLikeListResDto(mappedArticleLikeList);
   }
 
   private groupArticleByDay(articleList: ArticleWithImageDao[]) {

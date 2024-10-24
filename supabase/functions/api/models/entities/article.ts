@@ -10,4 +10,5 @@ export interface Article {
   deleted_at: string | null;
   mailling_list: string | null;
   is_share: boolean;
+  is_like: boolean;
 }

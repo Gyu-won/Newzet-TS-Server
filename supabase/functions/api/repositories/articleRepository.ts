@@ -72,7 +72,7 @@ export class ArticleRepository {
       .single();
 
     if (error) {
-      throw new DatabaseAccessError('아티클 조회 실패', error.message);
+      throw new DatabaseAccessError('공유 아티클 조회 실패', error.message);
     }
     return article;
   }
@@ -86,8 +86,19 @@ export class ArticleRepository {
       .single();
 
     if (error) {
-      throw new DatabaseAccessError('아티클 조회 실패', error.message);
+      throw new DatabaseAccessError('아티클 공유 실패', error.message);
     }
     return article;
+  }
+
+  async getLikeArticleList(userId: string): Promise<ArticleWithImageDao[]> {
+    const { data: articleLikeList, error } = await supabase.rpc('get_like_article_with_image', {
+      uid: userId,
+    });
+
+    if (error) {
+      throw new DatabaseAccessError('좋아요 아티클 목록 조회 실패', error.message);
+    }
+    return articleLikeList;
   }
 }
