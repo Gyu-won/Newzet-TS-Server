@@ -7,7 +7,6 @@ import { ArticleListResDto } from '../models/dtos/article/articleListResDto.ts';
 import { createErrorResponse, logError } from '../lib/exceptions/errorHandler.ts';
 import { InvalidArgumentsError } from '../lib/exceptions/invalidArgumentsError.ts';
 import { ArticleShareResDto } from '../models/dtos/article/articleShareResDto.ts';
-import { ArticleLikeListResDto } from '../models/dtos/article/articleLikeListResDto.ts';
 
 export class ArticleController {
   private articleService: ArticleService;
@@ -80,6 +79,19 @@ export class ArticleController {
       return c.json(
         createResponse(ResponseCode.SUCCESS, '좋아요 아티클 조회 성공', articleLikeList),
       );
+    } catch (error) {
+      const errorResponse = createErrorResponse(error);
+      logError(c, error);
+      return c.json(errorResponse);
+    }
+  }
+
+  async updateLikeArticleV1(c: Context) {
+    try {
+      const articleId = c.req.param('articleId') ?? '';
+      const isLike = c.req.query('islike') ?? '';
+      await this.articleService.updateLikeArticle(articleId, isLike);
+      return c.json(createResponse(ResponseCode.SUCCESS, '아티클 좋아요 변경 성공', null));
     } catch (error) {
       const errorResponse = createErrorResponse(error);
       logError(c, error);

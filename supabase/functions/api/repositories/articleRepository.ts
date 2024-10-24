@@ -101,4 +101,15 @@ export class ArticleRepository {
     }
     return articleLikeList;
   }
+
+  async updateLikeArticle(articleId: string, isLike: boolean) {
+    const { error } = await supabase
+      .from('article')
+      .update({ is_like: isLike })
+      .eq('id', articleId);
+
+    if (error) {
+      throw new DatabaseAccessError('아티클 좋아요 값 변경 실패', error.message);
+    }
+  }
 }
