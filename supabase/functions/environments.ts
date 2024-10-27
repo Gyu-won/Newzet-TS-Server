@@ -5,8 +5,8 @@ export const mailStorage = Deno.env.get('SB_MAIL_STORAGE')!;
 export const awsRegion = Deno.env.get('AWS_REGION')!;
 export const awsMailBucket = Deno.env.get('AWS_MAIL_BUCKET')!;
 export const awsContentBucket = Deno.env.get('AWS_CONTENT_BUCKET')!;
-export const awsMailAccessKey = Deno.env.get('AWS_MAIL_ACCESS_KEY')!;
-export const awsMailSecretKey = Deno.env.get('AWS_MAIL_SECRET_KEY')!;
+export const awsMailAccessKey = Deno.env.get('AWS_ACCESS_KEY')!;
+export const awsMailSecretKey = Deno.env.get('AWS_SECRET_KEY')!;
 export const awsContentAccessKey = Deno.env.get('AWS_CONTENT_ACCESS_KEY')!;
 export const awsContentSecretKey = Deno.env.get('AWS_CONTENT_SECRET_KEY')!;
 
