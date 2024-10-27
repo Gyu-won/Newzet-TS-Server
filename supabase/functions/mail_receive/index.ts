@@ -4,8 +4,7 @@ import { FcmNotificationService } from '../api/services/fcmNotificationService.t
 import { NewsletterService } from '../api/services/newsletterService.ts';
 import { SubscriptionService } from '../api/services/subscriptionService.ts';
 import { UserinfoService } from '../api/services/userinfoService.ts';
-import { getMailContent } from '../lib/s3Utils.ts';
-import { uploadContent } from '../lib/storageUtils.ts';
+import { getMailContent, uploadContent } from '../lib/s3Utils.ts';
 
 const userinfoService = new UserinfoService();
 const articleService = new ArticleService();
