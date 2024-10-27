@@ -3,12 +3,13 @@ import { ArticleListResDto } from '../models/dtos/article/articleListResDto.ts';
 import { ArticleResDto } from '../models/dtos/article/articleResDto.ts';
 import { ArticleWithImageDao } from '../models/daos/articleWithImageDao.ts';
 import { ArticleContentResDto } from '../models/dtos/article/articleContentResDto.ts';
-import { getContent } from '../../lib/storageUtils.ts';
 import { Article } from '../models/entities/article.ts';
 import { DailyArticleResDto } from '../models/dtos/article/dailyArticleResDto.ts';
 import { ForbiddenError } from '../lib/exceptions/forbiddenError.ts';
 import { ArticleShareResDto } from '../models/dtos/article/articleShareResDto.ts';
 import { ArticleLikeListResDto } from '../models/dtos/article/articleLikeListResDto.ts';
+import { getContentFromS3 } from '../../lib/s3Utils.ts';
+import { getContentFromStorage } from '../../lib/storageUtils.ts';
 
 export class ArticleService {
   private readonly webArticleShareLink = 'https://app.newzet.me/article';
@@ -50,7 +51,7 @@ export class ArticleService {
 
   async getArticleAndRead(articleId: string): Promise<ArticleContentResDto> {
     const article = await this.articleRepository.getArticleAndRead(articleId);
-    const content = await getContent(article.content_url);
+    const content = await this.getContent(article.content_url);
     return new ArticleContentResDto(article.title, content, article.is_like);
   }
 
@@ -59,7 +60,7 @@ export class ArticleService {
     if (!article.is_share) {
       throw new ForbiddenError('공유가 허용되지 않음');
     }
-    const content = await getContent(article.content_url);
+    const content = await this.getContent(article.content_url);
     return new ArticleContentResDto(article.title, content, article.is_like);
   }
 
@@ -103,5 +104,12 @@ export class ArticleService {
       return { day: day, articleList: groupedArticleByDay[day] };
     });
     return dailyArticleList;
+  }
+
+  private async getContent(contentUrl: string): Promise<string> {
+    if (contentUrl.endsWith('.html')) {
+      return await getContentFromStorage(contentUrl);
+    }
+    return await getContentFromS3(contentUrl);
   }
 }

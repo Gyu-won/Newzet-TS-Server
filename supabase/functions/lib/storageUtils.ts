@@ -14,7 +14,7 @@ export async function uploadContent(objectKey: string, content: string): Promise
   return data.path;
 }
 
-export async function getContent(contentUrl: string): Promise<string> {
+export async function getContentFromStorage(contentUrl: string): Promise<string> {
   const { data, error } = await supabase.storage.from(mailStorage).download(contentUrl);
 
   if (error) {
