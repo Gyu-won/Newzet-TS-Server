@@ -27,7 +27,8 @@ export class SubscriptionRepository {
     const { data: subscription, error } = await supabase
       .from('subscription')
       .select('*')
-      .eq('id', subscriptionId);
+      .eq('id', subscriptionId)
+      .single();
 
     if (error) {
       throw new DatabaseAccessError('subscription 조회 실패', error.message);
