@@ -1,3 +1,4 @@
+import { ForbiddenError } from '../lib/exceptions/forbiddenError.ts';
 import { SubscriptionListResDto } from '../models/dtos/subscription/subscriptionListResDto.ts';
 import { SubscriptionResDto } from '../models/dtos/subscription/subscriptionResDto.ts';
 import { NewsletterRepository } from '../repositories/newsletterRepository.ts';
@@ -40,5 +41,16 @@ export class SubscriptionService {
         newsletterMaillingList,
       );
     }
+  }
+
+  async deleteSubscription(userId: string, subscriptionId: string) {
+    const isUserSubscription = await this.subscriptionRepository.getIsUserSubscription(
+      userId,
+      subscriptionId,
+    );
+    if (!isUserSubscription) {
+      throw new ForbiddenError();
+    }
+    await this.subscriptionRepository.deleteSubscription(subscriptionId);
   }
 }
