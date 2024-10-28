@@ -24,4 +24,18 @@ export class SubscriptionController {
       return c.json(errorResponse);
     }
   }
+
+  async deleteSubscriptionV1(c: Context) {
+    try {
+      const userId = c.get('user').id;
+      const subscriptionId = c.req.param('subscriptionId') ?? '';
+
+      await this.subscriptionService.deleteSubscription(userId, subscriptionId);
+      return c.json(createResponse(ResponseCode.SUCCESS, '구독 삭제 성공', null));
+    } catch (error) {
+      const errorResponse = createErrorResponse(error);
+      logError(c, error);
+      return c.json(errorResponse);
+    }
+  }
 }
