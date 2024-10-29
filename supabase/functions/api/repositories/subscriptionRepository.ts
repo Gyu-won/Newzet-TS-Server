@@ -37,7 +37,7 @@ export class SubscriptionRepository {
       throw new DatabaseAccessError('subscription 조회 실패', error.message);
     }
 
-    return subscription[0].user_id === userId;
+    return subscription.user_id === userId;
   }
 
   async getSubscriptionListWithImageV1(userId: string): Promise<SubscriptionWithImageDaoV1[]> {

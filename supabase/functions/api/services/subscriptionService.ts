@@ -20,9 +20,8 @@ export class SubscriptionService {
   }
 
   async getSubscriptionListV1(userId: string): Promise<SubscriptionListResDtoV1> {
-    const subscriptionList = await this.subscriptionRepository.getSubscriptionListWithImageV1(
-      userId,
-    );
+    const subscriptionList =
+      await this.subscriptionRepository.getSubscriptionListWithImageV1(userId);
 
     return new SubscriptionListResDtoV1(
       subscriptionList.map((subscription) => new SubscriptionResDtoV1(subscription)),
@@ -30,9 +29,8 @@ export class SubscriptionService {
   }
 
   async getSubscriptionListV2(userId: string): Promise<SubscriptionListResDtoV2> {
-    const subscriptionList = await this.subscriptionRepository.getSubscriptionListWithImageV2(
-      userId,
-    );
+    const subscriptionList =
+      await this.subscriptionRepository.getSubscriptionListWithImageV2(userId);
 
     return new SubscriptionListResDtoV2(
       subscriptionList.map((subscription) => new SubscriptionResDtoV2(subscription)),
