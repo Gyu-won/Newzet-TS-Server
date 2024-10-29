@@ -1,6 +1,9 @@
 import { DatabaseAccessError } from '../lib/exceptions/databaseAccessError.ts';
 import { supabase } from '../lib/supabase.ts';
-import { SubscriptionWithImageDao } from '../models/daos/subscriptionWithImageDao.ts';
+import {
+  SubscriptionWithImageDaoV1,
+  SubscriptionWithImageDaoV2,
+} from '../models/daos/subscriptionWithImageDao.ts';
 
 export class SubscriptionRepository {
   async getIsSubscribing(
@@ -37,7 +40,22 @@ export class SubscriptionRepository {
     return subscription[0].user_id === userId;
   }
 
-  async getSubscriptionListWithImage(userId: string): Promise<SubscriptionWithImageDao[]> {
+  async getSubscriptionListWithImageV1(userId: string): Promise<SubscriptionWithImageDaoV1[]> {
+    const { data: subscriptionList, error } = await supabase.rpc(
+      'get_subscription_list_with_image',
+      {
+        uid: userId,
+      },
+    );
+
+    if (error) {
+      throw new DatabaseAccessError(`구독 목록 조회 실패: ${error.message}`);
+    }
+
+    return subscriptionList;
+  }
+
+  async getSubscriptionListWithImageV2(userId: string): Promise<SubscriptionWithImageDaoV2[]> {
     const { data: subscriptionList, error } = await supabase.rpc('get_subscription_with_image', {
       uid: userId,
     });

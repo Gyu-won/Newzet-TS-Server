@@ -16,7 +16,20 @@ export class SubscriptionController {
     try {
       const userId = c.get('user').id;
 
-      const subscriptionList = await this.subscriptionService.getSubscriptionList(userId);
+      const subscriptionList = await this.subscriptionService.getSubscriptionListV1(userId);
+      return c.json(createResponse(ResponseCode.SUCCESS, '구독 목록 조회 성공', subscriptionList));
+    } catch (error) {
+      const errorResponse = createErrorResponse(error);
+      logError(c, error);
+      return c.json(errorResponse);
+    }
+  }
+
+  async getSubscriptionListV2(c: Context) {
+    try {
+      const userId = c.get('user').id;
+
+      const subscriptionList = await this.subscriptionService.getSubscriptionListV2(userId);
       return c.json(createResponse(ResponseCode.SUCCESS, '구독 목록 조회 성공', subscriptionList));
     } catch (error) {
       const errorResponse = createErrorResponse(error);
