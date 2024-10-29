@@ -1,5 +1,12 @@
-import { SubscriptionListResDto } from '../models/dtos/subscription/subscriptionListResDto.ts';
-import { SubscriptionResDto } from '../models/dtos/subscription/subscriptionResDto.ts';
+import { ForbiddenError } from '../lib/exceptions/forbiddenError.ts';
+import {
+  SubscriptionListResDtoV1,
+  SubscriptionListResDtoV2,
+} from '../models/dtos/subscription/subscriptionListResDto.ts';
+import {
+  SubscriptionResDtoV1,
+  SubscriptionResDtoV2,
+} from '../models/dtos/subscription/subscriptionResDto.ts';
 import { NewsletterRepository } from '../repositories/newsletterRepository.ts';
 import { SubscriptionRepository } from '../repositories/subscriptionRepository.ts';
 
@@ -12,11 +19,23 @@ export class SubscriptionService {
     this.newsletterRepository = new NewsletterRepository();
   }
 
-  async getSubscriptionList(userId: string): Promise<SubscriptionListResDto> {
-    const subscriptionList = await this.subscriptionRepository.getSubscriptionListWithImage(userId);
+  async getSubscriptionListV1(userId: string): Promise<SubscriptionListResDtoV1> {
+    const subscriptionList = await this.subscriptionRepository.getSubscriptionListWithImageV1(
+      userId,
+    );
 
-    return new SubscriptionListResDto(
-      subscriptionList.map((subscription) => new SubscriptionResDto(subscription)),
+    return new SubscriptionListResDtoV1(
+      subscriptionList.map((subscription) => new SubscriptionResDtoV1(subscription)),
+    );
+  }
+
+  async getSubscriptionListV2(userId: string): Promise<SubscriptionListResDtoV2> {
+    const subscriptionList = await this.subscriptionRepository.getSubscriptionListWithImageV2(
+      userId,
+    );
+
+    return new SubscriptionListResDtoV2(
+      subscriptionList.map((subscription) => new SubscriptionResDtoV2(subscription)),
     );
   }
 
@@ -40,5 +59,16 @@ export class SubscriptionService {
         newsletterMaillingList,
       );
     }
+  }
+
+  async deleteSubscription(userId: string, subscriptionId: string) {
+    const isUserSubscription = await this.subscriptionRepository.getIsUserSubscription(
+      userId,
+      subscriptionId,
+    );
+    if (!isUserSubscription) {
+      throw new ForbiddenError();
+    }
+    await this.subscriptionRepository.deleteSubscription(subscriptionId);
   }
 }
