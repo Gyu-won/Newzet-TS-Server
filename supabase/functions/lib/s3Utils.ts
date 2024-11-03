@@ -11,6 +11,7 @@ import {
 } from '../environments.ts';
 import { S3AccessError } from '../api/lib/exceptions/s3AccessError.ts';
 import { simpleParser, ParsedMail } from 'npm:mailparser';
+import { convertToSeoulTime } from '../api/lib/utils/timezone.ts';
 
 const mailFactory = new ApiFactory({
   region: awsRegion,
@@ -37,15 +38,21 @@ export async function getMailContent(objectKey: string): Promise<ParsedMail> {
   return mailContent;
 }
 
-export async function uploadContent(objectKey: string, content: string): Promise<string> {
+export async function uploadContent(
+  objectKey: string,
+  toDomain: string,
+  content: string,
+): Promise<string> {
   try {
+    const currentTime = calculateCurrentTime();
+    const uploadKey = `${toDomain}_${currentTime}_${objectKey}`;
     await htmlContentS3.putObject({
       Bucket: awsContentBucket,
-      Key: objectKey,
+      Key: uploadKey,
       Body: content,
       ContentType: 'text/html',
     });
-    return objectKey;
+    return uploadKey;
   } catch (error) {
     throw new S3AccessError(`html 파일 업로드 실패: ${error.message}`);
   }
@@ -85,4 +92,12 @@ async function getHtmlContent(objectKey: string): Promise<ReadableStream> {
 async function decodeUtf8(responseBody: ReadableStream): Promise<string> {
   const responseBodyBuffer = await new Response(responseBody).arrayBuffer();
   return new TextDecoder('utf-8').decode(responseBodyBuffer);
+}
+
+function calculateCurrentTime(): string {
+  const today = convertToSeoulTime(new Date());
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  return `${yyyy}${mm}${dd}`;
 }
