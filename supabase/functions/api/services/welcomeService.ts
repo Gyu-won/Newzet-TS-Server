@@ -7,7 +7,7 @@ import { UserinfoRepository } from '../repositories/userinfoRepository.ts';
 export class WelcomeService {
   private readonly newzetNewsletterId = 'c4922e54-f58a-4270-80da-2dc6d59bc4fa';
   private readonly welcomeMailTitle = '💌 뉴젯과 더욱 친해지는 방법 💌';
-  private readonly welcomeMailUrl = 'welcome_mail.html';
+  private readonly welcomeMailUrl = 'newzet_content/welcome_letter';
 
   private userinfoRepository: UserinfoRepository;
   private newsletterRepository: NewsletterRepository;
