@@ -3,6 +3,7 @@ import { NewsletterListResDto } from '../models/dtos/newsletter/newsletterListRe
 import { NewsletterRecommendResDto } from '../models/dtos/newsletter/newsletterRecommendResDto.ts';
 import { NewsletterResDto } from '../models/dtos/newsletter/newsletterResDto.ts';
 import { Newsletter } from '../models/entities/newsletter.ts';
+import { AdvertiseRepository } from '../repositories/advertiseRepository.ts';
 import { CategoryRepository } from '../repositories/categoryRepository.ts';
 import { NewsletterRepository } from '../repositories/newsletterRepository.ts';
 import { SubscriptionRepository } from '../repositories/subscriptionRepository.ts';
@@ -13,12 +14,14 @@ export class NewsletterService {
   private categoryRepository: CategoryRepository;
   private subscriptionRepository: SubscriptionRepository;
   private userCategoryRepository: UserCategoryRepository;
+  private advertiseRepository: AdvertiseRepository;
 
   constructor() {
     this.newsletterRepository = new NewsletterRepository();
     this.categoryRepository = new CategoryRepository();
     this.subscriptionRepository = new SubscriptionRepository();
     this.userCategoryRepository = new UserCategoryRepository();
+    this.advertiseRepository = new AdvertiseRepository();
   }
 
   async getNewsletter(newsletterId: string): Promise<NewsletterInfoResDto> {
@@ -71,13 +74,21 @@ export class NewsletterService {
     const userCategoryList = await this.userCategoryRepository.getUserCategoryListByUserId(userId);
     const userCategoryIdList = userCategoryList.map((category) => category.id);
 
-    const newsletterList = await this.newsletterRepository.getNewsletterListByCategoryIdList(
-      userCategoryIdList,
+    const advertiseNewsletterIdList = await this.advertiseRepository.getAdvertiseNewsletterIdList();
+    const advertiseNewsletterList = await Promise.all(
+      advertiseNewsletterIdList.map((advertise) =>
+        this.newsletterRepository.getNewsletterById(advertise.newsletter_id),
+      ),
     );
 
-    const recommendedNewsletterList = this.getRandomNewsletterList(newsletterList, 4);
+    const recommendNumber = 4 - advertiseNewsletterList.length;
+    const newsletterList =
+      await this.newsletterRepository.getNewsletterListByCategoryIdList(userCategoryIdList);
+    const recommendedNewsletterList = this.getRandomNewsletterList(newsletterList, recommendNumber);
+
+    const combinedNewsletterList = [...advertiseNewsletterList, ...recommendedNewsletterList];
     return new NewsletterRecommendResDto(
-      recommendedNewsletterList.map((newsletter) => new NewsletterResDto(newsletter)),
+      combinedNewsletterList.map((newsletter) => new NewsletterResDto(newsletter)),
     );
   }
 
