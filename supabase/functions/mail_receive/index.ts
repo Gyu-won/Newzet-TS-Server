@@ -20,7 +20,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
     const fromName = mailContent.from?.value[0].name;
     const fromDomain = mailContent.from?.value[0].address;
     const toDomain = mailContent.to?.value[0].address;
-    const maillingList = mailContent.headers.get('list')?.id?.name ?? null;
+    let maillingList = mailContent.headers.get('list')?.id?.name ?? null;
 
     const contentUrl = await uploadContent(objectKey, toDomain, mailContent.html);
 
@@ -28,24 +28,34 @@ Deno.serve(async (req: Request): Promise<Response> => {
       maillingList,
       fromDomain,
     );
+    maillingList = newsletter?.mailling_list ?? maillingList;
 
     const toMailList = mailContent.to?.text.split(', ');
     for (const toMail of toMailList) {
       const userinfo = await userinfoService.getUserinfoByEmail(toMail);
-      const subscription = await subscriptionService.addSubscription(
+      const subscription = await subscriptionService.getSubscriptionByDomainOrMaillingList(
         userinfo.id,
-        newsletter?.name ?? fromName,
         fromDomain,
-        newsletter?.mailling_list ?? maillingList,
+        maillingList,
       );
+      let subscriptionId = subscription?.id ?? null;
+      if (!subscription && maillingList != '85444.list-id.stibee.com') {
+        const addedSubscription = await subscriptionService.addSubscription(
+          userinfo.id,
+          newsletter?.name ?? fromName,
+          fromDomain,
+          maillingList,
+        );
+        subscriptionId = addedSubscription.id;
+      }
       const article = await articleService.addArticle(
         userinfo.id,
         newsletter?.name ?? fromName,
         fromDomain,
         mailContent.subject,
         contentUrl,
-        newsletter?.mailling_list ?? maillingList,
-        subscription?.id ?? null,
+        maillingList,
+        subscriptionId,
       );
 
       await fcmNotificationService.addFcmNotification(userinfo.id, article);

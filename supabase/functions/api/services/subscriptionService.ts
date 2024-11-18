@@ -38,27 +38,31 @@ export class SubscriptionService {
     );
   }
 
-  async addSubscription(
+  async getSubscriptionByDomainOrMaillingList(
     userId: string,
-    newsletterName: string,
     newsletterDomain: string,
     newsletterMaillingList: string,
-  ): Promise<Subscription | null> {
+  ) {
     const subscription = await this.subscriptionRepository.getSubscriptionByDomainOrMaillingList(
       userId,
       newsletterDomain,
       newsletterMaillingList,
     );
-
-    if (!subscription && newsletterMaillingList != '85444.list-id.stibee.com') {
-      return await this.subscriptionRepository.addSubscription(
-        userId,
-        newsletterName,
-        newsletterDomain,
-        newsletterMaillingList,
-      );
-    }
     return subscription;
+  }
+
+  async addSubscription(
+    userId: string,
+    newsletterName: string,
+    newsletterDomain: string,
+    newsletterMaillingList: string,
+  ): Promise<Subscription> {
+    return await this.subscriptionRepository.addSubscription(
+      userId,
+      newsletterName,
+      newsletterDomain,
+      newsletterMaillingList,
+    );
   }
 
   async deleteSubscription(userId: string, subscriptionId: string) {
