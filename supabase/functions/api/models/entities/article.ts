@@ -11,4 +11,5 @@ export interface Article {
   mailling_list: string | null;
   is_share: boolean;
   is_like: boolean;
+  subscription_id: string;
 }
