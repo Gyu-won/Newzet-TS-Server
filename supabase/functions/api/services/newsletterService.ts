@@ -61,14 +61,14 @@ export class NewsletterService {
     );
   }
 
-  async getNewsletterByMaillingListOrDomain(
-    newsletterMaillingList: string,
-    newsletterDomain: string,
+  async getNewsletterByDomainOrMaillingList(
+    domain: string,
+    maillingList: string,
   ): Promise<Newsletter | null> {
-    if (newsletterMaillingList == null) {
-      return await this.newsletterRepository.getNewsletterByDomain(newsletterDomain);
-    }
-    return await this.newsletterRepository.getNewsletterByMaillingList(newsletterMaillingList);
+    return await this.newsletterRepository.getNewsletterByDomainOrMaillingList(
+      domain,
+      maillingList,
+    );
   }
 
   async recommendNewsletterList(userId: string): Promise<NewsletterRecommendResDto> {

@@ -35,27 +35,20 @@ export class NewsletterRepository {
     return newsletterList;
   }
 
-  async getNewsletterByDomain(domain: string): Promise<Newsletter | null> {
+  async getNewsletterByDomainOrMaillingList(
+    domain: string,
+    maillingList: string | null,
+  ): Promise<Newsletter | null> {
     const { data: newsletter, error } = await supabase
       .from('newsletter')
       .select('*')
-      .eq('domain', domain)
+      .or(`mailling_list.eq.${maillingList}, domain.eq.${domain}`)
       .maybeSingle();
-    if (error) {
-      throw new DatabaseAccessError('뉴스레터 조회 실패', error.message);
-    }
-    return newsletter;
-  }
 
-  async getNewsletterByMaillingList(maillingList: string): Promise<Newsletter | null> {
-    const { data: newsletter, error } = await supabase
-      .from('newsletter')
-      .select('*')
-      .eq('mailling_list', maillingList)
-      .maybeSingle();
     if (error) {
       throw new DatabaseAccessError('뉴스레터 조회 실패', error.message);
     }
+
     return newsletter;
   }
 

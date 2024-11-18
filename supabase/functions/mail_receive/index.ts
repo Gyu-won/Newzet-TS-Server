@@ -24,9 +24,9 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
     const contentUrl = await uploadContent(objectKey, toDomain, mailContent.html);
 
-    const newsletter = await newsletterService.getNewsletterByMaillingListOrDomain(
-      maillingList,
+    const newsletter = await newsletterService.getNewsletterByDomainOrMaillingList(
       fromDomain,
+      maillingList,
     );
     maillingList = newsletter?.mailling_list ?? maillingList;
 
