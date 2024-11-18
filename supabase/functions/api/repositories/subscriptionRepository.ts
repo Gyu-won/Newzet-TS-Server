@@ -4,14 +4,15 @@ import {
   SubscriptionWithImageDaoV1,
   SubscriptionWithImageDaoV2,
 } from '../models/daos/subscriptionWithImageDao.ts';
+import { Subscription } from '../models/entities/subscription.ts';
 
 export class SubscriptionRepository {
-  async getIsSubscribing(
+  async getSubscriptionByDomainOrMaillingList(
     userId: string,
     newsletterDomain: string,
     newsletterMaillingList: string,
-  ): Promise<boolean> {
-    const { data: subscribing, error } = await supabase
+  ): Promise<Subscription | null> {
+    const { data: subscription, error } = await supabase
       .from('subscription')
       .select('*')
       .eq('user_id', userId)
@@ -23,7 +24,7 @@ export class SubscriptionRepository {
       throw new DatabaseAccessError('구독 여부 조회 실패', error.message);
     }
 
-    return subscribing.length > 0;
+    return subscription?.[0] ?? null;
   }
 
   async getIsUserSubscription(userId: string, subscriptionId: string): Promise<boolean> {
@@ -72,19 +73,25 @@ export class SubscriptionRepository {
     newsletterName: string,
     newsletterDomain: string,
     newsletterMaillingList: string,
-  ) {
-    const { error: insertError } = await supabase.from('subscription').insert([
-      {
-        user_id: userId,
-        newsletter_name: newsletterName,
-        newsletter_domain: newsletterDomain,
-        newsletter_mailling_list: newsletterMaillingList,
-      },
-    ]);
+  ): Promise<Subscription> {
+    const { data: subscription, error: insertError } = await supabase
+      .from('subscription')
+      .insert([
+        {
+          user_id: userId,
+          newsletter_name: newsletterName,
+          newsletter_domain: newsletterDomain,
+          newsletter_mailling_list: newsletterMaillingList,
+        },
+      ])
+      .select()
+      .single();
 
     if (insertError) {
       throw new DatabaseAccessError('subscription 추가 실패', insertError.message);
     }
+
+    return subscription;
   }
 
   async deleteSubscription(subscriptionId: string) {

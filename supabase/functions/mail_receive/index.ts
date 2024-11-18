@@ -32,6 +32,12 @@ Deno.serve(async (req: Request): Promise<Response> => {
     const toMailList = mailContent.to?.text.split(', ');
     for (const toMail of toMailList) {
       const userinfo = await userinfoService.getUserinfoByEmail(toMail);
+      const subscription = await subscriptionService.addSubscription(
+        userinfo.id,
+        newsletter?.name ?? fromName,
+        fromDomain,
+        newsletter?.mailling_list ?? maillingList,
+      );
       const article = await articleService.addArticle(
         userinfo.id,
         newsletter?.name ?? fromName,
@@ -39,14 +45,9 @@ Deno.serve(async (req: Request): Promise<Response> => {
         mailContent.subject,
         contentUrl,
         newsletter?.mailling_list ?? maillingList,
+        subscription?.id ?? null,
       );
 
-      await subscriptionService.addSubscription(
-        userinfo.id,
-        newsletter?.name ?? fromName,
-        fromDomain,
-        newsletter?.mailling_list ?? maillingList,
-      );
       await fcmNotificationService.addFcmNotification(userinfo.id, article);
     }
 

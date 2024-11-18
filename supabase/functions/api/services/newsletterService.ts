@@ -37,11 +37,12 @@ export class NewsletterService {
   ): Promise<NewsletterInfoResDto> {
     const newsletter = await this.newsletterRepository.getNewsletterById(newsletterId);
     const category = await this.categoryRepository.getCategoryById(newsletter.category_id);
-    const isSubscribing = await this.subscriptionRepository.getIsSubscribing(
+    const subscription = await this.subscriptionRepository.getSubscriptionByDomainOrMaillingList(
       userId,
       newsletter.domain,
       newsletter.mailling_list,
     );
+    const isSubscribing = subscription != null;
 
     return new NewsletterInfoResDto(newsletter, isSubscribing, category.name);
   }

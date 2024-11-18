@@ -9,6 +9,7 @@ import {
 } from '../models/dtos/subscription/subscriptionResDto.ts';
 import { NewsletterRepository } from '../repositories/newsletterRepository.ts';
 import { SubscriptionRepository } from '../repositories/subscriptionRepository.ts';
+import { Subscription } from '../models/entities/subscription.ts';
 
 export class SubscriptionService {
   private subscriptionRepository: SubscriptionRepository;
@@ -42,21 +43,22 @@ export class SubscriptionService {
     newsletterName: string,
     newsletterDomain: string,
     newsletterMaillingList: string,
-  ) {
-    const isSubscribing = await this.subscriptionRepository.getIsSubscribing(
+  ): Promise<Subscription | null> {
+    const subscription = await this.subscriptionRepository.getSubscriptionByDomainOrMaillingList(
       userId,
       newsletterDomain,
       newsletterMaillingList,
     );
 
-    if (!isSubscribing && newsletterMaillingList != '85444.list-id.stibee.com') {
-      await this.subscriptionRepository.addSubscription(
+    if (!subscription && newsletterMaillingList != '85444.list-id.stibee.com') {
+      return await this.subscriptionRepository.addSubscription(
         userId,
         newsletterName,
         newsletterDomain,
         newsletterMaillingList,
       );
     }
+    return subscription;
   }
 
   async deleteSubscription(userId: string, subscriptionId: string) {
