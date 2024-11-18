@@ -112,4 +112,22 @@ export class ArticleRepository {
       throw new DatabaseAccessError('아티클 좋아요 값 변경 실패', error.message);
     }
   }
+
+  async getUnreadArticleListByDate(userId: string, date: Date): Promise<Article[]> {
+    const startOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const endOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
+
+    const { data: unreadArticleList, error } = await supabase
+      .from('article')
+      .select('*')
+      .eq('to_user_id', userId)
+      .eq('is_read', false)
+      .gte('created_at', startOfDay.toISOString())
+      .lte('created_at', endOfDay.toISOString());
+
+    if (error) {
+      throw new DatabaseAccessError('날짜에 따른 안읽은 아티클 조회 실패', error.message);
+    }
+    return unreadArticleList ?? [];
+  }
 }
