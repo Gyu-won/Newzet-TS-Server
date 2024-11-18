@@ -1,3 +1,5 @@
+import { Color } from '../../lib/enums/color.ts';
+
 export interface Newsletter {
   id: string;
   category_id: string;
@@ -12,4 +14,5 @@ export interface Newsletter {
   status: string | null;
   day_of_week: string | null;
   deleted_at: string | null;
+  color: Color;
 }

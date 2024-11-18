@@ -9,6 +9,7 @@ import {
   userinfoRouter,
 } from './routers/index.ts';
 import welcomeRouter from './routers/welcomeRouter.ts';
+import widgetRouter from './routers/widgetRouter.ts';
 
 const app = new Hono();
 
@@ -20,5 +21,6 @@ app.basePath('/api').route('/my', userinfoRouter);
 app.basePath('/api').route('/subscription', subscriptionRouter);
 app.basePath('/api').route('/newsletter', newsletterRouter);
 app.basePath('/api').route('/welcome', welcomeRouter);
+app.basePath('/api').route('/widget', widgetRouter);
 
 Deno.serve(app.fetch);
