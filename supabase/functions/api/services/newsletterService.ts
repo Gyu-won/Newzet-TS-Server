@@ -37,11 +37,12 @@ export class NewsletterService {
   ): Promise<NewsletterInfoResDto> {
     const newsletter = await this.newsletterRepository.getNewsletterById(newsletterId);
     const category = await this.categoryRepository.getCategoryById(newsletter.category_id);
-    const isSubscribing = await this.subscriptionRepository.getIsSubscribing(
+    const subscription = await this.subscriptionRepository.getSubscriptionByDomainOrMaillingList(
       userId,
       newsletter.domain,
       newsletter.mailling_list,
     );
+    const isSubscribing = subscription != null;
 
     return new NewsletterInfoResDto(newsletter, isSubscribing, category.name);
   }
@@ -60,14 +61,14 @@ export class NewsletterService {
     );
   }
 
-  async getNewsletterByMaillingListOrDomain(
-    newsletterMaillingList: string,
-    newsletterDomain: string,
+  async getNewsletterByDomainOrMaillingList(
+    domain: string,
+    maillingList: string,
   ): Promise<Newsletter | null> {
-    if (newsletterMaillingList == null) {
-      return await this.newsletterRepository.getNewsletterByDomain(newsletterDomain);
-    }
-    return await this.newsletterRepository.getNewsletterByMaillingList(newsletterMaillingList);
+    return await this.newsletterRepository.getNewsletterByDomainOrMaillingList(
+      domain,
+      maillingList,
+    );
   }
 
   async recommendNewsletterList(userId: string): Promise<NewsletterRecommendResDto> {

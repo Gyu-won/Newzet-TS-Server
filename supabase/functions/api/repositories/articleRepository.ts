@@ -27,6 +27,7 @@ export class ArticleRepository {
     title: string,
     contentUrl: string,
     maillingList: string,
+    subscriptionId: string | null,
   ): Promise<Article> {
     const { data: article, error: insertError } = await supabase
       .from('article')
@@ -38,6 +39,7 @@ export class ArticleRepository {
           title: title,
           content_url: contentUrl,
           mailling_list: maillingList,
+          subscription_id: subscriptionId,
         },
       ])
       .select()

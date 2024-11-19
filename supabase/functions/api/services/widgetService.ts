@@ -33,10 +33,10 @@ export class WidgetService {
   }
 
   async getNewsletterByDomainOrMaillingList(domain: string, maillingList: string | null) {
-    if (maillingList == null) {
-      return await this.newsletterRepository.getNewsletterByDomain(domain);
-    }
-    return await this.newsletterRepository.getNewsletterByMaillingList(maillingList);
+    return await this.newsletterRepository.getNewsletterByDomainOrMaillingList(
+      domain,
+      maillingList,
+    );
   }
 
   private getRandomArticle(articleList: Article[]): Article {

@@ -38,6 +38,7 @@ export class ArticleService {
     title: string,
     contentUrl: string,
     maillingList: string,
+    subscriptionId: string | null,
   ): Promise<Article> {
     return await this.articleRepository.addArticle(
       userId,
@@ -46,6 +47,7 @@ export class ArticleService {
       title,
       contentUrl,
       maillingList,
+      subscriptionId,
     );
   }
 
