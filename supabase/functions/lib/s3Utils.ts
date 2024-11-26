@@ -1,35 +1,24 @@
 import { ApiFactory } from 'https://deno.land/x/aws_api@v0.8.1/client/mod.ts';
 import { S3 } from 'https://deno.land/x/aws_api@v0.8.1/services/s3/mod.ts';
 import {
-  awsMailAccessKey,
+  awsS3AccessKey,
+  awsS3SecretKey,
   awsMailBucket,
   awsContentBucket,
   awsRegion,
-  awsMailSecretKey,
-  awsContentAccessKey,
-  awsContentSecretKey,
 } from '../environments.ts';
 import { S3AccessError } from '../api/lib/exceptions/s3AccessError.ts';
 import { simpleParser, ParsedMail } from 'npm:mailparser';
 import { convertToSeoulTime } from '../api/lib/utils/timezone.ts';
 
-const mailFactory = new ApiFactory({
+const S3Factory = new ApiFactory({
   region: awsRegion,
   credentials: {
-    awsAccessKeyId: awsMailAccessKey,
-    awsSecretKey: awsMailSecretKey,
+    awsAccessKeyId: awsS3AccessKey,
+    awsSecretKey: awsS3SecretKey,
   },
 });
-const mailS3 = mailFactory.makeNew(S3);
-
-const htmlContentFactory = new ApiFactory({
-  region: awsRegion,
-  credentials: {
-    awsAccessKeyId: awsContentAccessKey,
-    awsSecretKey: awsContentSecretKey,
-  },
-});
-const htmlContentS3 = htmlContentFactory.makeNew(S3);
+const awsS3 = S3Factory.makeNew(S3);
 
 export async function getMailContent(objectKey: string): Promise<ParsedMail> {
   const responseBody = await getMailContentFromS3(objectKey);
@@ -46,7 +35,7 @@ export async function uploadContent(
   try {
     const currentTime = calculateCurrentTime();
     const uploadKey = `${toDomain}_${currentTime}_${objectKey}`;
-    await htmlContentS3.putObject({
+    await awsS3.putObject({
       Bucket: awsContentBucket,
       Key: uploadKey,
       Body: content,
@@ -64,7 +53,7 @@ export async function getContentFromS3(objectKey: string): Promise<string> {
 }
 
 async function getMailContentFromS3(objectKey: string): Promise<ReadableStream> {
-  const response = await mailS3.getObject({
+  const response = await awsS3.getObject({
     Bucket: awsMailBucket,
     Key: objectKey,
   });
@@ -77,7 +66,7 @@ async function getMailContentFromS3(objectKey: string): Promise<ReadableStream> 
 }
 
 async function getHtmlContent(objectKey: string): Promise<ReadableStream> {
-  const response = await htmlContentS3.getObject({
+  const response = await awsS3.getObject({
     Bucket: awsContentBucket,
     Key: objectKey,
   });
